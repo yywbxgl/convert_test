@@ -16,10 +16,10 @@ def random_parameters():
 	n = np.random.randint(1, (250-ret["kernel_size"])//ret["stride"]+1)
 	H = (n-1)*ret["stride"]+ret["kernel_size"] - ret["pad"]*2
 	ret["shape"] = (C, H, H)
-	print(ret)
 	return ret
 	
-def random_result(arg, root_dir):
+def random_result(arg):
+	global root_dir
 	prototxt = root_dir + 'conv.prototxt'
 	weight_npy = root_dir + 'weight'
 	bias_npy = root_dir + 'bias'
@@ -69,5 +69,5 @@ if __name__ == '__main__':
 		root_dir += '/'
 	
 	param = random_parameters()
-	random_result(param, root_dir)
+	random_result(param)
 
