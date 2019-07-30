@@ -4,7 +4,8 @@
 
 ## 环境依赖
 1. caffe
-2. onnxruntime
+2. onnx
+3. onnxruntime
 
 ## 运行脚本
 1. 修改conv_test.py脚本中COMPILER 与 CONVERTER的路径

@@ -81,10 +81,9 @@ def put_data_to_onnx(onnxmode, input):
 
 def conv_test(test_dir):
     # 0. 随机生成proto 以及 featuremap
-    print("1111111111111111111")
     param = random_convolution.random_parameters()
     random_convolution.random_result(param, test_dir)
-    print("2222222222222222")
+    print("\n--------random data finish----------\n")
 
     # 1. 创建caffe Model，运行结果保存， 通过caffe-runtime推理，
     # x = get_numpy_from_img(conv_dir + 'conv.png')
@@ -109,7 +108,7 @@ def conv_test(test_dir):
     print(cmd)
     os.system(cmd)
     # convert2onnx.convert(conv_dir+'conv.prototxt', conv_dir+'conv.caffemodel', 'test', conv_dir)
-    onnx_model = test_dir + "./conv.onnx"
+    onnx_model = test_dir + "conv.onnx"
     y2 = onnx_run(onnx_model, x)
     np.save(onnx_model+".output", y2)
     print("\n--------onnx run finish----------\n")

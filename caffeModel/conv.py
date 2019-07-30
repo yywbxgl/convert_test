@@ -57,6 +57,8 @@ def create_input_data():
 
 def run(protofile, x, w, b):
     # 加载网络结构
+    # caffe.set_mode_cpu()
+
     net = caffe.Net(protofile, caffe.TEST)
 
     print(net.blobs)
