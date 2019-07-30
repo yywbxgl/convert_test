@@ -13,9 +13,9 @@ from onnx import TensorProto
 import random_convolution
 
 # 编译器路径，用于onnx编译成loadable文件
-COMPILER = '/home/sunqiliang/onnc/r1.2.0-ubuntu1604/r1.2.0/bin/onnc.nv_full'
+COMPILER = 'complier/onnc.nv_full'
 # caffe 转onnx 工具路径， 工具下载 https://github.com/yywbxgl/caffe-to-onnx.git
-CONVERTER = '/home/sunqiliang/code/python/onnx_test/caffe-onnx/convert2onnx.py'
+CONVERTER = 'caffe-to-onnx/convert2onnx.py'
 
 
 # # 图片数据读取为numpy

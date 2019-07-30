@@ -8,12 +8,12 @@
 3. onnxruntime
 
 ## 运行脚本
-1. 修改conv_test.py脚本中COMPILER 与 CONVERTER的路径
-
-2. 运行命令
 
 ```
-./conv_test.py  output_dir
+python3  conv_test.py  [output_dir]
 ```
 
-3. 所有输出结果放在output_dir目录中，包括model以及input和推理后的output
+## docker运行命令
+```
+ docker run  -it -e PYTHONIOENCODING=utf-8  -v /data/home/qiliang.sun/onnx_test/:/home  onnx_test  bash
+```
