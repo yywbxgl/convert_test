@@ -73,6 +73,7 @@ def random_graph(t='Convolution'):
 	"""
 	参数如果不传，或者传'Convolution'，则是生成单个卷积
 	如果传'Network'，则是生成简单网络
+	将来再考虑扩展
 	"""
 	if t!='Convolution' and t!='Network':
 		return None
