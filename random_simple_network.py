@@ -5,7 +5,7 @@ import numpy as np
 from functools import reduce
 import itertools
 
-def _random_graph():
+def _random_graph(t):
 	"""
 	随机产生一个简单的神经网络结构,结构放在一个list里
 	这个函数import不要使用，应使用random_graph函数
@@ -33,6 +33,8 @@ def _random_graph():
 		"kernel_size":kernel_size,
 		"stride":stride,
 		"pad":pad})
+	if t=='Convolution':
+		return ret
 	X = (shape[1]+pad*2-kernel_size)//stride+1
 	shape = (num_output, X, X)
 
@@ -67,9 +69,15 @@ def _random_graph():
 	#print(ret)
 	return ret
 
-def random_graph():
+def random_graph(t='Convolution'):
+	"""
+	参数如果不传，或者传'Convolution'，则是生成单个卷积
+	如果传'Network'，则是生成简单网络
+	"""
+	if t!='Convolution' and t!='Network':
+		return None
 	while True:
-		graph = _random_graph()
+		graph = _random_graph(t)
 		if graph != None:
 			return graph
 
@@ -187,5 +195,5 @@ if __name__ == '__main__':
 	elif root_dir[-1] != '/':
 		root_dir += '/'
 	
-	graph = random_graph()
+	graph = random_graph('Network')
 	random_result(graph, root_dir)
