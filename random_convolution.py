@@ -18,8 +18,7 @@ def random_parameters():
 	ret["shape"] = (C, H, H)
 	return ret
 	
-def random_result(arg):
-	global root_dir
+def random_result(arg, root_dir):
 	prototxt = root_dir + 'conv.prototxt'
 	weight_npy = root_dir + 'weight'
 	bias_npy = root_dir + 'bias'
@@ -69,5 +68,5 @@ if __name__ == '__main__':
 		root_dir += '/'
 	
 	param = random_parameters()
-	random_result(param)
+	random_result(param,root_dir)
 
