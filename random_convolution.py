@@ -19,10 +19,10 @@ def random_parameters():
 	return ret
 	
 def random_result(arg, root_dir):
-	prototxt = root_dir + 'conv.prototxt'
-	weight_npy = root_dir + 'weight'
-	bias_npy = root_dir + 'bias'
-	featuremap_npy = root_dir + 'featuremap'
+	prototxt = root_dir + 'deploy.prototxt'
+	weight_npy = root_dir + 'conv-weight'
+	bias_npy = root_dir + 'conv-bias'
+	featuremap_npy = root_dir + 'data'
 	with open(prototxt, 'w') as f:
 		f.write('name: "convolution"\n')
 		f.write('layer{\n')
