@@ -64,14 +64,14 @@ def run(protofile, x, w, b):
     print(net.blobs)
 
     # 获取input
-    print('input shape: ',net.blobs['data'].data.shape)
+    print('input shape: ',net.blobs['data'].data.dtype, net.blobs['data'].data.shape)
     # print(x)
 
     # 添加input数据到model
     net.blobs['data'].data[...] = x
 
     # 修改 weight 参数 (1,3,3,3)
-    print('conv weight shape: ', net.params['conv'][0].data.shape)
+    print('conv weight shape: ', net.params['conv'][0].data.dtype, net.params['conv'][0].data.shape)
     # w1 = np.arange(9, dtype=np.float32)
     # w2 = np.ones((9), dtype=np.float32)
     # w3 = np.ones((9), dtype=np.float32)*2
@@ -82,15 +82,15 @@ def run(protofile, x, w, b):
     # print(w)
 
     # 修改 bias 参数
-    print('conv bias shape: ', net.params['conv'][1].data.shape)
+    print('conv bias shape: ', net.params['conv'][1].data.dtype, net.params['conv'][1].data.shape)
     # b = np.zeros(net.params['conv'][1].data.shape, dtype=np.float32)
     net.params['conv'][1].data[:] = b
     # print(b)
 
     # 运行结果
-    print('output shape: ', net.blobs['conv'].data.shape)
     net.forward()
-    print(net.blobs['conv'].data)   #运行测试
+    # print('output shape: ', net.blobs['conv'].data.dtype, net.blobs['conv'].data.shape)
+    # print(net.blobs['conv'].data)   #运行测试
 
     # 保存Model
     # file_name = save_path + "conv.caffemodel"

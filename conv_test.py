@@ -41,7 +41,7 @@ def onnx_run(OnnxName, x):
     model = onnx.load(model_name)
     print("load onnx model : ", model_name)
     tf_rep = backend.prepare(model)
-    # print("input data: \n", x)
+    print("input data shepe: ", x.dtype, x.shape)
 
     # for i in x[:,0,:]:
     #     print (i)
@@ -56,7 +56,7 @@ def onnx_run(OnnxName, x):
     # print(x)
 
     # # Run the model on the backend
-    # output = backend.run_model(model, img)
+    # output = backend.run_model(model, x)
 
     # session = onnxruntime.InferenceSession(OnnxName)
     # input_name = session.get_inputs().name
@@ -66,9 +66,7 @@ def onnx_run(OnnxName, x):
     # pred_onx = session.run(None, {input_name:x})
 
     output = tf_rep.run(x)
-    output = np.array(output, dtype=np.float32)
-    print("output data: \n", output.shape)
-    print(output)
+    output = np.array(output[0])
     return output
 
 
@@ -93,7 +91,7 @@ def conv_test(test_dir):
     b = np.load(test_dir + "bias.npy")
     [a,b,c] = x.shape
     x = x.reshape(1, a,b,c)
-    print("input data shape:", x.shape)
+    print("input data shape:", x.dtype, x.shape)
     print(x)
     model, y1 = caffeModel.conv.run(protofile, x, w, b)
     # 保存Model, 和output
@@ -101,6 +99,8 @@ def conv_test(test_dir):
     model.save(caffe_model)
     print("save model: ", caffe_model)
     np.save(caffe_model+".output", y1)
+    print('output shape: ', y1.dtype, y1.shape)
+    print(y1) 
     print("\n--------caffe run finish----------\n")
 
     # 2. 转换caffe model 到onnx, 在onnx-runtime上推理
@@ -110,6 +110,8 @@ def conv_test(test_dir):
     # convert2onnx.convert(conv_dir+'conv.prototxt', conv_dir+'conv.caffemodel', 'test', conv_dir)
     onnx_model = test_dir + "conv.onnx"
     y2 = onnx_run(onnx_model, x)
+    print("output data shape: ", y2.dtype, y2.shape)
+    print(y2)
     np.save(onnx_model+".output", y2)
     print("\n--------onnx run finish----------\n")
 
