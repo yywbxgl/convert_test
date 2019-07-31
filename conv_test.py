@@ -85,10 +85,10 @@ def conv_test(test_dir):
 
     # 1. 创建caffe Model，运行结果保存， 通过caffe-runtime推理，
     # x = get_numpy_from_img(conv_dir + 'conv.png')
-    protofile = test_dir + "conv.prototxt"
-    x = np.load(test_dir + "featuremap.npy")
-    w = np.load(test_dir + "weight.npy")
-    b = np.load(test_dir + "bias.npy")
+    protofile = test_dir + "deploy.prototxt"
+    x = np.load(test_dir + "data.npy")
+    w = np.load(test_dir + "conv-weight.npy")
+    b = np.load(test_dir + "conv-bias.npy")
     [a,b,c] = x.shape
     x = x.reshape(1, a,b,c)
     print("input data shape:", x.dtype, x.shape)
