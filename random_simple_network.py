@@ -175,7 +175,7 @@ def random_result(arg, root_dir):
 			X = (shape[1]-i["kernel_size"])//i["stride"]+1
 			shape = (shape[0], X, X)
 		elif i["type"] == "InnerProduct":
-			arr = np.random.random((i["num_output"], reduce(lambda a,b:a*b,shape,1))) - 0.5
+			arr = np.random.random((reduce(lambda a,b:a*b,shape,1), i["num_output"])) - 0.5
 			npy = root_dir + i["name"] + '-weight'
 			np.save(npy, arr.astype(np.float32))
 			print(npy + '.npy', arr.shape)
@@ -185,6 +185,91 @@ def random_result(arg, root_dir):
 			print(npy + '.npy', arr.shape)
 			shape = (i["num_output"],)
 
+
+def make_graph_by_prototxt(prototxt):
+	"""
+	从prototxt文件中导出网络结构
+	"""
+	s = open(prototxt, 'r').read().replace(':',' : ').replace('{',' { ').replace('}',' } ').split()
+	graph = []
+	level = 0
+	for i in s:
+		if i == '{':
+			level += 1
+			if level == 1:
+				node = {}
+		elif i == '}':
+			level -= 1
+			if level == 0:
+				graph.append(node)
+		elif i[0]>='0' and i[0]<='9' and level>=1:
+			n = int(i)
+			if key == 'dim':
+				node['shape'] = node['shape'] + (n,) if 'shape' in node else (n,)
+			else:
+				node[key] = n
+		elif i != ':' and i[0] != '"' and level>=1:
+			key = i
+		elif i[0] == '"' and level>=1:
+			node[key] = i.replace('"', '')
+	return graph
+
+def inference_by_graph(graph):
+	for i in graph:
+		if i["type"] == "Input":
+			data = np.load(root_dir+i["name"]+'.npy')
+			#print(i["type"], data.shape)
+		elif i["type"] == "Convolution":
+			weight = np.load(root_dir+i["name"]+'-weight'+'.npy')
+			bias = np.load(root_dir+i["name"]+'-bias'+'.npy')
+			if i["pad"] != 0:
+				X = i["pad"]*2 + data.shape[1]
+				d = np.zeros((data.shape[0], X, X)).astype(np.float32)
+				d[:, i["pad"]:i["pad"]+data.shape[1], i["pad"]:i["pad"]+data.shape[2]] = data
+			else:
+				d = data
+			stride = i["stride"]
+			kernel_size = i["kernel_size"]
+			X = (d.shape[1]-kernel_size)//stride+1
+			data = np.zeros((i["num_output"], X, X)).astype(np.float32)
+			for c,h,w in itertools.product(*map(lambda x:range(x),data.shape)):
+				data[c,h,w] = np.sum(np.multiply(
+							d[:, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size],
+							weight[c]
+							)) + bias[c]
+			#print(i["type"], data.shape)
+		elif i["type"] == "ReLU":
+			data = np.where(data>0.0,data,0.0)
+			#print(i["type"], data.shape)
+		elif i["type"] == "Pooling":
+			stride = i["stride"]
+			kernel_size = i["kernel_size"]
+			X = (data.shape[1]-kernel_size)//stride+1
+			d = np.zeros((data.shape[0], X, X)).astype(np.float32)
+			for c,h,w in itertools.product(*map(lambda x:range(x),d.shape)):
+				d[c,h,w] = np.max(data[c, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size])
+			data = d
+			#print(i["type"], data.shape)
+		elif i["type"] == "InnerProduct":
+			#print(np.load(root_dir+i["name"]+'-weight'+'.npy').shape)
+			data = np.matmul(data.reshape(reduce(lambda a,b:a*b, data.shape, 1)), np.load(root_dir+i["name"]+'-weight'+'.npy')) + np.load(root_dir+i["name"]+'-bias'+'.npy')
+			#print(i["type"], data.shape)
+	
+	npy = root_dir + "inference-output-result"
+	np.save(npy, data.astype(np.float32))
+	print(npy + '.npy', data.shape)
+
+def inference(root_dir):
+	"""
+	对简单网络做推理
+	"""
+	#搜索目录file_dir下后缀名为postfix的文件列表
+	import os
+	f_name = lambda file_dir, postfix : list(map((lambda x : x[1]), (lambda s : filter(lambda x : os.path.splitext(x[0])[1] == '.' + postfix, map(lambda x:(x, os.path.join(s[0],x)), s[2])))(tuple(os.walk(file_dir))[0])))
+	prototxt = f_name(root_dir, 'prototxt')[0]
+	graph = make_graph_by_prototxt(prototxt)
+	print('Inferencing...Please wait')
+	inference_by_graph(graph)
 		
 if __name__ == '__main__':
 	root_dir = './'
@@ -195,6 +280,8 @@ if __name__ == '__main__':
 		root_dir = './'
 	elif root_dir[-1] != '/':
 		root_dir += '/'
-	
+
 	graph = random_graph('Network')
 	random_result(graph, root_dir)
+	inference(root_dir)
+	
