@@ -215,6 +215,9 @@ def _make_graph_by_prototxt(prototxt):
 	return graph
 
 def _inference_by_graph(graph):
+	"""
+	根据已读graph做推理
+	"""
 	for i in graph:
 		if i["type"] == "Input":
 			data = np.load(root_dir+i["name"]+'.npy')
@@ -282,7 +285,10 @@ if __name__ == '__main__':
 	elif root_dir[-1] != '/':
 		root_dir += '/'
 
+	# 随机生成简单网络，如果random_graph不带参数，则只生成一个卷积
 	graph = random_graph('Network')
+	# 将prototxt和相应的npy生成在root_dir所存的目录
 	random_result(graph, root_dir)
+	# numpy下的推理，比较慢，但可以拿来对比
 	inference(root_dir)
 	
