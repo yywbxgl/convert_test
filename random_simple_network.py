@@ -159,11 +159,11 @@ def random_result(arg, root_dir):
 			print(npy + '.npy', arr.shape)
 			shape = i["shape"]
 		elif i["type"] == "Convolution":
-			arr = np.random.random((i["num_output"], shape[0], i["kernel_size"], i["kernel_size"]))
+			arr = (np.random.random((i["num_output"], shape[0], i["kernel_size"], i["kernel_size"])) - 0.5)/20.0
 			npy = root_dir + i["name"] + '-weight'
 			np.save(npy, arr.astype(np.float32))
 			print(npy + '.npy', arr.shape)
-			arr = (np.random.random((i["num_output"],)) - 0.5) * 10.0
+			arr = np.random.random((i["num_output"],)) - 0.5
 			npy = root_dir + i["name"] + '-bias'
 			np.save(npy, arr.astype(np.float32))
 			print(npy + '.npy', arr.shape)
@@ -175,18 +175,18 @@ def random_result(arg, root_dir):
 			X = (shape[1]-i["kernel_size"])//i["stride"]+1
 			shape = (shape[0], X, X)
 		elif i["type"] == "InnerProduct":
-			arr = np.random.random((reduce(lambda a,b:a*b,shape,1), i["num_output"])) - 0.5
+			arr = (np.random.random((reduce(lambda a,b:a*b,shape,1), i["num_output"])) - 0.5)/20.0
 			npy = root_dir + i["name"] + '-weight'
 			np.save(npy, arr.astype(np.float32))
 			print(npy + '.npy', arr.shape)
-			arr = (np.random.random((i["num_output"],)) - 0.5) * 10.0
+			arr = np.random.random((i["num_output"],)) - 0.5
 			npy = root_dir + i["name"] + '-bias'
 			np.save(npy, arr.astype(np.float32))
 			print(npy + '.npy', arr.shape)
 			shape = (i["num_output"],)
 
 
-def make_graph_by_prototxt(prototxt):
+def _make_graph_by_prototxt(prototxt):
 	"""
 	从prototxt文件中导出网络结构
 	"""
@@ -214,7 +214,7 @@ def make_graph_by_prototxt(prototxt):
 			node[key] = i.replace('"', '')
 	return graph
 
-def inference_by_graph(graph):
+def _inference_by_graph(graph):
 	for i in graph:
 		if i["type"] == "Input":
 			data = np.load(root_dir+i["name"]+'.npy')
@@ -258,6 +258,7 @@ def inference_by_graph(graph):
 	npy = root_dir + "inference-output-result"
 	np.save(npy, data.astype(np.float32))
 	print(npy + '.npy', data.shape)
+	print(data)
 
 def inference(root_dir):
 	"""
@@ -267,9 +268,9 @@ def inference(root_dir):
 	import os
 	f_name = lambda file_dir, postfix : list(map((lambda x : x[1]), (lambda s : filter(lambda x : os.path.splitext(x[0])[1] == '.' + postfix, map(lambda x:(x, os.path.join(s[0],x)), s[2])))(tuple(os.walk(file_dir))[0])))
 	prototxt = f_name(root_dir, 'prototxt')[0]
-	graph = make_graph_by_prototxt(prototxt)
+	graph = _make_graph_by_prototxt(prototxt)
 	print('Inferencing...Please wait')
-	inference_by_graph(graph)
+	_inference_by_graph(graph)
 		
 if __name__ == '__main__':
 	root_dir = './'
