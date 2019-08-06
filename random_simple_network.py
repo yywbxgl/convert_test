@@ -186,94 +186,95 @@ def random_result(arg, root_dir):
 			shape = (i["num_output"],)
 
 
-def _make_graph_by_prototxt(prototxt):
-	"""
-	从prototxt文件中导出网络结构
-	"""
-	s = open(prototxt, 'r').read().replace(':',' : ').replace('{',' { ').replace('}',' } ').split()
-	graph = []
-	level = 0
-	for i in s:
-		if i == '{':
-			level += 1
-			if level == 1:
-				node = {}
-		elif i == '}':
-			level -= 1
-			if level == 0:
-				graph.append(node)
-		elif i[0]>='0' and i[0]<='9' and level>=1:
-			n = int(i)
-			if key == 'dim':
-				node['shape'] = node['shape'] + (n,) if 'shape' in node else (n,)
-			else:
-				node[key] = n
-		elif i != ':' and i[0] != '"' and level>=1:
-			key = i
-		elif i[0] == '"' and level>=1:
-			node[key] = i.replace('"', '')
-	return graph
-
-def _inference_by_graph(graph):
-	"""
-	根据已读graph做推理
-	"""
-	for i in graph:
-		if i["type"] == "Input":
-			data = np.load(root_dir+i["name"]+'.npy')
-			#print(i["type"], data.shape)
-		elif i["type"] == "Convolution":
-			weight = np.load(root_dir+i["name"]+'-weight'+'.npy')
-			bias = np.load(root_dir+i["name"]+'-bias'+'.npy')
-			if i["pad"] != 0:
-				X = i["pad"]*2 + data.shape[1]
-				d = np.zeros((data.shape[0], X, X)).astype(np.float32)
-				d[:, i["pad"]:i["pad"]+data.shape[1], i["pad"]:i["pad"]+data.shape[2]] = data
-			else:
-				d = data
-			stride = i["stride"]
-			kernel_size = i["kernel_size"]
-			X = (d.shape[1]-kernel_size)//stride+1
-			data = np.zeros((i["num_output"], X, X)).astype(np.float32)
-			for c,h,w in itertools.product(*map(lambda x:range(x),data.shape)):
-				data[c,h,w] = np.sum(np.multiply(
-							d[:, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size],
-							weight[c]
-							)) + bias[c]
-			#print(i["type"], data.shape)
-		elif i["type"] == "ReLU":
-			data = np.where(data>0.0,data,0.0)
-			#print(i["type"], data.shape)
-		elif i["type"] == "Pooling":
-			stride = i["stride"]
-			kernel_size = i["kernel_size"]
-			X = (data.shape[1]-kernel_size)//stride+1
+class test_inference(object):
+	def __init__(self, root_dir):
+		self.root_dir = root_dir
+		#搜索目录file_dir下后缀名为postfix的文件列表
+		import os
+		f_name = lambda file_dir, postfix : list(map((lambda x : x[1]), (lambda s : filter(lambda x : os.path.splitext(x[0])[1] == '.' + postfix, map(lambda x:(x, os.path.join(s[0],x)), s[2])))(tuple(os.walk(file_dir))[0])))
+		prototxt = f_name(root_dir, 'prototxt')[0]
+		self.graph = self.make_graph_by_prototxt(prototxt)
+	def make_graph_by_prototxt(self, prototxt):
+		"""
+		从prototxt文件中导出网络结构
+		"""
+		s = open(prototxt, 'r').read().replace(':',' : ').replace('{',' { ').replace('}',' } ').split()
+		graph = []
+		level = 0
+		for i in s:
+			if i == '{':
+				level += 1
+				if level == 1:
+					node = {}
+			elif i == '}':
+				level -= 1
+				if level == 0:
+					graph.append(node)
+			elif i[0]>='0' and i[0]<='9' and level>=1:
+				n = int(i)
+				if key == 'dim':
+					node['shape'] = node['shape'] + (n,) if 'shape' in node else (n,)
+				else:
+					node[key] = n
+			elif i != ':' and i[0] != '"' and level>=1:
+				key = i
+			elif i[0] == '"' and level>=1:
+				node[key] = i.replace('"', '')
+		return graph
+	def input(self, data, node):
+		return np.load(self.root_dir+node["name"]+'.npy')
+	def conv(self, data, node):
+		weight = np.load(self.root_dir+node["name"]+'-weight'+'.npy')
+		bias = np.load(self.root_dir+node["name"]+'-bias'+'.npy')
+		if node["pad"] != 0:
+			X = node["pad"]*2 + data.shape[1]
 			d = np.zeros((data.shape[0], X, X)).astype(np.float32)
-			for c,h,w in itertools.product(*map(lambda x:range(x),d.shape)):
-				d[c,h,w] = np.max(data[c, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size])
-			data = d
-			#print(i["type"], data.shape)
-		elif i["type"] == "InnerProduct":
-			#print(np.load(root_dir+i["name"]+'-weight'+'.npy').shape)
-			data = np.matmul(data.reshape(reduce(lambda a,b:a*b, data.shape, 1)), np.load(root_dir+i["name"]+'-weight'+'.npy')) + np.load(root_dir+i["name"]+'-bias'+'.npy')
-			#print(i["type"], data.shape)
-	
-	npy = root_dir + "inference-output-result"
-	np.save(npy, data.astype(np.float32))
-	print(npy + '.npy', data.shape)
-	print(data)
-
+			d[:, node["pad"]:node["pad"]+data.shape[1], node["pad"]:node["pad"]+data.shape[2]] = data
+		else:
+			d = data
+		stride = node["stride"]
+		kernel_size = node["kernel_size"]
+		X = (d.shape[1]-kernel_size)//stride+1
+		data = np.zeros((node["num_output"], X, X)).astype(np.float32)
+		for c,h,w in itertools.product(*map(lambda x:range(x),data.shape)):
+			data[c,h,w] = np.sum(np.multiply(
+						d[:, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size],
+						weight[c]
+						)) + bias[c]
+		return data
+	def relu(self, data, node):
+		return np.where(data>0.0,data,0.0)
+	def pool(self, data, node):
+		stride = node["stride"]
+		kernel_size = node["kernel_size"]
+		X = (data.shape[1]-kernel_size)//stride+1
+		d = np.zeros((data.shape[0], X, X)).astype(np.float32)
+		for c,h,w in itertools.product(*map(lambda x:range(x),d.shape)):
+			d[c,h,w] = np.max(data[c, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size])
+		return d
+	def fc(self, data, node):
+		return np.matmul(data.reshape(reduce(lambda a,b:a*b, data.shape, 1)), np.load(self.root_dir+node["name"]+'-weight'+'.npy')) + np.load(self.root_dir+node["name"]+'-bias'+'.npy')
+	def inference(self):
+		op_table = {
+			"Input" : self.input,
+			"Convolution" : self.conv,
+			"ReLU" : self.relu,
+			"Pooling" : self.pool,
+			"InnerProduct" : self.fc
+		}
+		return reduce(lambda data, node : op_table[node["type"]](data, node), self.graph, None)
+		
 def inference(root_dir):
 	"""
 	对简单网络做推理
 	"""
-	#搜索目录file_dir下后缀名为postfix的文件列表
-	import os
-	f_name = lambda file_dir, postfix : list(map((lambda x : x[1]), (lambda s : filter(lambda x : os.path.splitext(x[0])[1] == '.' + postfix, map(lambda x:(x, os.path.join(s[0],x)), s[2])))(tuple(os.walk(file_dir))[0])))
-	prototxt = f_name(root_dir, 'prototxt')[0]
-	graph = _make_graph_by_prototxt(prototxt)
+	x = test_inference(root_dir)
 	print('Inferencing...Please wait')
-	_inference_by_graph(graph)
+	data = x.inference()
+	npy = root_dir + "inference-output-result"
+	np.save(npy, data.astype(np.float32))
+	print(npy + '.npy', data.shape)
+	print(data)
 		
 if __name__ == '__main__':
 	root_dir = './'
