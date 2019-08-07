@@ -175,7 +175,7 @@ def random_result(arg, root_dir):
 			X = (shape[1]-i["kernel_size"])//i["stride"]+1
 			shape = (shape[0], X, X)
 		elif i["type"] == "InnerProduct":
-			arr = (np.random.random((reduce(lambda a,b:a*b,shape,1), i["num_output"])) - 0.5)/20.0
+			arr = (np.random.random((i["num_output"], reduce(lambda a,b:a*b,shape,1))) - 0.5)/20.0
 			npy = root_dir + i["name"] + '-weight'
 			np.save(npy, arr.astype(np.float32))
 			print(npy + '.npy', arr.shape)
@@ -253,7 +253,7 @@ class test_inference(object):
 			d[c,h,w] = np.max(data[c, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size])
 		return d
 	def fc(self, data, node):
-		return np.matmul(data.reshape(reduce(lambda a,b:a*b, data.shape, 1)), np.load(self.root_dir+node["name"]+'-weight'+'.npy')) + np.load(self.root_dir+node["name"]+'-bias'+'.npy')
+		return np.matmul(data.reshape(reduce(lambda a,b:a*b, data.shape, 1)), np.load(self.root_dir+node["name"]+'-weight'+'.npy').transpose(1,0)) + np.load(self.root_dir+node["name"]+'-bias'+'.npy')
 	def inference(self):
 		op_table = {
 			"Input" : self.input,
