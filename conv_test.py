@@ -4,7 +4,7 @@ import numpy as np
 import sys, os
 # import cv2
 # from PIL import Image
-import caffeModel.conv
+import caffeTest.conv
 import onnx
 import onnxruntime
 import onnxruntime.backend as backend
@@ -99,7 +99,7 @@ def conv_test(test_dir):
     x = x.reshape(1, a,b,c)
     print("input data shape:", x.dtype, x.shape)
     print(x)
-    model, y1 = caffeModel.conv.run(protofile, x, w, b)
+    model, y1 = caffeTest.conv.run(protofile, x, w, b)
     # 保存Model, 和output
     caffe_model = test_dir + "conv.caffemodel"
     model.save(caffe_model)

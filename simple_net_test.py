@@ -4,8 +4,8 @@ import numpy as np
 # from PIL import Image
 import sys, os
 # import cv2
-import caffeModel.conv
-import caffeModel.creat_caffe_model
+import caffeTest.conv
+import caffeTest.creat_caffe_model
 import onnx
 import onnxruntime
 import onnxruntime.backend as backend
@@ -92,7 +92,7 @@ def simple_net_test(test_dir):
     print("input data shape:", x.dtype, x.shape)
     print(x)
 
-    model , y1 = caffeModel.creat_caffe_model.run(test_dir)
+    model , y1 = caffeTest.creat_caffe_model.run(test_dir)
     print(type(y1))
     
     # 保存Model, 和output
