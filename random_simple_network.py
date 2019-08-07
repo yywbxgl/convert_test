@@ -69,6 +69,24 @@ def _random_graph(t):
 	#print(ret)
 	return ret
 
+def _check(graph):
+	for i in graph:
+		if i["type"] == "Input":
+			shape = i["shape"]
+		elif i["type"] == "Convolution":
+			X = (shape[1]+i["pad"]*2-i["kernel_size"])//i["stride"]+1
+			shape = (i["num_output"], X, X)
+		elif i["type"] == "ReLU":
+			pass
+		elif i["type"] == "Pooling":
+			X = (shape[1]-i["kernel_size"])//i["stride"]+1
+			shape = (shape[0], X, X)
+		elif i["type"] == "InnerProduct":
+			if reduce(lambda a,b:a*b,shape,1) > 15000:
+				return False
+			shape = (i["num_output"],)
+	return True
+
 def random_graph(t='Convolution'):
 	"""
 	参数如果不传，或者传'Convolution'，则是生成单个卷积
@@ -79,7 +97,8 @@ def random_graph(t='Convolution'):
 		return None
 	while True:
 		graph = _random_graph(t)
-		if graph != None:
+		if graph != None and _check(graph) == True:
+		#if graph != None:
 			return graph
 
 def random_result(arg, root_dir):
