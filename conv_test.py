@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 import numpy as np
-# from PIL import Image
 import sys, os
 # import cv2
+# from PIL import Image
 import caffeModel.conv
 import onnx
 import onnxruntime
@@ -13,26 +13,26 @@ from onnx import TensorProto
 import random_convolution
 
 # 编译器路径，用于onnx编译成loadable文件
-COMPILER = 'complier/onnc.nv_full'
+COMPILER = 'complier/onnc.nv_full.120'
 # caffe 转onnx 工具路径， 工具下载 https://github.com/yywbxgl/caffe-to-onnx.git
 CONVERTER = 'caffe-to-onnx/convert2onnx.py'
 
 
-# # 图片数据读取为numpy
+# # # 图片数据读取为numpy
 # def get_numpy_from_img(file):
 
-#     img = Image.open("cat.jpg")
+#     # img = Image.open(file)
 #     # x = np.array(img, dtype='float32')
 #     # x = x.reshape(net.blobs['data'].data.shape)
 
-#     # img = cv2.imread(file)
+#     img = cv2.imread(file)
 #     # cv2默认为 BGR顺序，而其他软件一般使用RGB，所以需要转换
 #     # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) # cv2默认为bgr顺序
 #     x = np.array(img, dtype=np.float32)
 #     # print(x)
-#     x = np.reshape(x, (1,5,5,3))
+#     # x = np.reshape(x, (1,5,5,3))
 #     # 矩阵转置换，img读取后的格式为W*H*C 转为model输入格式 C*W*H
-#     x = np.transpose(x,(0,3,1,2))
+#     x = np.transpose(x,(2,0,1))
 #     return x
 
 def onnx_run(OnnxName, x):
@@ -84,11 +84,17 @@ def conv_test(test_dir):
     print("\n--------random data finish----------\n")
 
     # 1. 创建caffe Model，运行结果保存， 通过caffe-runtime推理，
-    # x = get_numpy_from_img(conv_dir + 'conv.png')
     protofile = test_dir + "deploy.prototxt"
     x = np.load(test_dir + "data.npy")
     w = np.load(test_dir + "conv-weight.npy")
     b = np.load(test_dir + "conv-bias.npy")
+
+    # x = get_numpy_from_img(test_dir + 'c1.jpg')
+    # w = np.ones((1,3,4,4), dtype=np.float32) 
+    # b = np.zeros((1), dtype=np.float32)
+    # np.save(test_dir + 'conv-weight.npy', w) 
+    # np.save(test_dir + 'conv-bias.npy', b)
+
     [a,b,c] = x.shape
     x = x.reshape(1, a,b,c)
     print("input data shape:", x.dtype, x.shape)
