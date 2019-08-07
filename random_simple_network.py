@@ -24,8 +24,8 @@ def _random_graph(t):
 		itertools.product(range(1,12,2), range(1, 12), range(0,6))))
 	if len(choice_list)==0:
 		return None
-	#1~300
-	num_output = np.random.randint(1, 301)
+	#1~30
+	num_output = np.random.randint(1, 31)
 	kernel_size, stride, pad = choice_list[np.random.randint(0,len(choice_list))]
 	ret.append({"type":"Convolution",
 		"name":"conv1",
