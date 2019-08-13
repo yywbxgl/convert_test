@@ -19,7 +19,7 @@ import onnxmltools
 
 
 # 编译器路径，用于onnx编译成loadable文件
-COMPILER = 'complier/onnc.nv_full.120'
+COMPILER = 'complier/onnc.nv_full.130'
 # caffe 转onnx 工具路径， 工具下载 https://github.com/yywbxgl/caffe-to-onnx.git
 CONVERTER = 'caffe-to-onnx/convert2onnx.py'
 
@@ -50,16 +50,16 @@ def onnx_run(OnnxName, x):
 
 
 def csv2np(csv_file, npy):
-    # np.save(npy[:-4] if len(npy)>4 and npy[-4:]=='.npy' else npy, np.array(list(map(lambda x: int(x,16),open(csv_file, 'r').read().split(','))), dtype=np.uint8))
-    if (len(npy)>4 and npy[-4:]=='.npy'):
-        file_name = npy[:-4]
-    else:
-        file_name = npy
+    np.save(npy[:-4] if len(npy)>4 and npy[-4:]=='.npy' else npy, np.array(list(map(lambda x: int(x,16),open(csv_file, 'r').read().split(','))), dtype=np.uint8))
+    # if (len(npy)>4 and npy[-4:]=='.npy'):
+    #     file_name = npy[:-4]
+    # else:
+    #     file_name = npy
     
-    temp = open(csv_file, 'r').read().split(',')
-    temp = map(lambda x: int(x,16), temp)
-    temp = np.array(list(temp))
-    np.save(file_name, temp)
+    # temp = open(csv_file, 'r').read().split(',')
+    # temp = map(lambda x: int(x,16), temp)
+    # temp = np.array(list(temp))
+    # np.save(file_name, temp)
 
 # def loadCaffeModel(net_path, model_path):
 #     # read prototxt
