@@ -1,20 +1,22 @@
 #!/usr/bin/python3
-
 import numpy as np
+import sys, os, time
 # from PIL import Image
-import sys, os
 # import cv2
+
 import caffeTest.conv
 import caffeTest.creat_caffe_model
+import initData.random_simple_network
+import initData.featuremap
+
 import onnx
 import onnxruntime
 import onnxruntime.backend as backend
 from onnx import version_converter, helper, shape_inference, optimizer
 from onnx import TensorProto
-import initData.random_simple_network
-
 import coremltools
 import onnxmltools
+
 
 # 编译器路径，用于onnx编译成loadable文件
 COMPILER = 'complier/onnc.nv_full.120'
@@ -46,28 +48,43 @@ def onnx_run(OnnxName, x):
     output = np.array(output[0])
     return output
 
-def loadCaffeModel(net_path, model_path):
-    # read prototxt
-    net = caffe_pb2.NetParameter()
-    # 把字符串读如message中
-    text_format.Merge(open(net_path).read(), net)
-    # print(net.layer)
 
-    # read caffemodel
-    model = caffe_pb2.NetParameter()
-    f = open(model_path, 'rb')
-    # 反序列化
-    model.ParseFromString(f.read())
-    f.close()
-    # print(net.layer)
-    print("1.caffe模型加载完成")
-    print(model)
-    # return net,model
+def csv2np(csv_file, npy):
+    # np.save(npy[:-4] if len(npy)>4 and npy[-4:]=='.npy' else npy, np.array(list(map(lambda x: int(x,16),open(csv_file, 'r').read().split(','))), dtype=np.uint8))
+    if (len(npy)>4 and npy[-4:]=='.npy'):
+        file_name = npy[:-4]
+    else:
+        file_name = npy
+    
+    temp = open(csv_file, 'r').read().split(',')
+    temp = map(lambda x: int(x,16), temp)
+    temp = np.array(list(temp))
+    np.save(file_name, temp)
+
+# def loadCaffeModel(net_path, model_path):
+#     # read prototxt
+#     net = caffe_pb2.NetParameter()
+#     # 把字符串读如message中
+#     text_format.Merge(open(net_path).read(), net)
+#     # print(net.layer)
+
+#     # read caffemodel
+#     model = caffe_pb2.NetParameter()
+#     f = open(model_path, 'rb')
+#     # 反序列化
+#     model.ParseFromString(f.read())
+#     f.close()
+#     # print(net.layer)
+#     print("1.caffe模型加载完成")
+#     print(model)
+#     # return net,model
 
 def simple_net_test(test_dir):
     # 0. 随机生成proto 以及 featuremap
     param = initData.random_simple_network.random_graph('Network')
     initData.random_simple_network.random_result(param, test_dir)
+    initData.featuremap.main(test_dir+'data.npy', test_dir+'data.csv', np.float16)
+    csv2np(test_dir+'data.csv', test_dir+'data_featuremap.npy')
     # random_simple_network.inference(test_dir)
     print("\n--------random data finish----------\n")
 
