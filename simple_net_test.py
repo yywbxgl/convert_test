@@ -11,7 +11,7 @@ import onnxruntime
 import onnxruntime.backend as backend
 from onnx import version_converter, helper, shape_inference, optimizer
 from onnx import TensorProto
-import random_simple_network
+import initData.random_simple_network
 
 import coremltools
 import onnxmltools
@@ -66,8 +66,8 @@ def loadCaffeModel(net_path, model_path):
 
 def simple_net_test(test_dir):
     # 0. 随机生成proto 以及 featuremap
-    param = random_simple_network.random_graph('Network')
-    random_simple_network.random_result(param, test_dir)
+    param = initData.random_simple_network.random_graph('Network')
+    initData.random_simple_network.random_result(param, test_dir)
     # random_simple_network.inference(test_dir)
     print("\n--------random data finish----------\n")
 

@@ -10,7 +10,7 @@ import onnxruntime
 import onnxruntime.backend as backend
 from onnx import version_converter, helper
 from onnx import TensorProto
-import random_convolution
+import initData.random_convolution
 
 # 编译器路径，用于onnx编译成loadable文件
 COMPILER = 'complier/onnc.nv_full.120'
@@ -79,8 +79,8 @@ def put_data_to_onnx(onnxmode, input):
 
 def conv_test(test_dir):
     # 0. 随机生成proto 以及 featuremap
-    param = random_convolution.random_parameters()
-    random_convolution.random_result(param, test_dir)
+    param = initData.random_convolution.random_parameters()
+    initData.random_convolution.random_result(param, test_dir)
     print("\n--------random data finish----------\n")
 
     # 1. 创建caffe Model，运行结果保存， 通过caffe-runtime推理，
