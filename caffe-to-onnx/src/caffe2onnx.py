@@ -97,10 +97,19 @@ class Caffe2Onnx():
     def getBolobsShape(self, blobs):
         ParamShape = []
         for blob in blobs:
-            print ("blob.shape ", blob.shape)
+            # print ("blob.shape ", blob.shape)
             if blob.shape.dim == []:
-                print ('blob.shape is none')
-                shape = [blob.num, blob.channels, blob.height, blob.width]
+                # print ('blob.shape is none')
+                # shape = [blob.num, blob.channels, blob.height, blob.width]
+                shape = []
+                if blob.num != 1:
+                    shape.append(blob.num)
+                if blob.channels != 1:
+                    shape.append(blob.channels)
+                if blob.height != 1:
+                    shape.append(blob.height)
+                if blob.width != 1:
+                    shape.append(blob.width)
                 ParamShape.append(shape)
             else:
                 ParamShape.append(blob.shape.dim)
