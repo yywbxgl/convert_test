@@ -9,7 +9,9 @@
 
 ## 运行脚本
 ```
-python3  conv_test.py  [output_dir]
+python3  conv_test.py         [output_dir]
+python3  simple_net_test.py   [output_dir]
+python3  classic_net_test.py  [output_dir]  [caffe_proto_file] [caffe_model] [input_img]
 ```
 
 ## docker运行命令
