@@ -74,6 +74,13 @@ def _check(graph):
 		if i["type"] == "Input":
 			shape = i["shape"]
 		elif i["type"] == "Convolution":
+			bank_size = 32 * 1024
+			weight_size = i["num_output"] * shape[0] * i["kernel_size"] * i["kernel_size"] * 2
+			weight_size = (weight_size + 127) // 128 * 128
+			weight_banks = (weight_size + (bank_size-1)) // bank_size
+			feature_banks = 16 - weight_banks
+			if weight_banks>15 or feature_banks*1024//i["kernel_size"]<1:
+				return False
 			X = (shape[1]+i["pad"]*2-i["kernel_size"])//i["stride"]+1
 			shape = (i["num_output"], X, X)
 		elif i["type"] == "ReLU":
