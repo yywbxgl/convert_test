@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import argparse
 from src.caffe2onnx import *
 import onnx
@@ -9,6 +8,7 @@ import sys
 #import cv2
 from PIL import Image
 from importlib import reload
+from onnx import helper, shape_inference
 
 # 保存onnx model
 def saveonnxmodel(onnxmodel,onnx_save_path):
@@ -26,7 +26,16 @@ def convert(NetPath, ModelPath, OnnxName, OnnxSavePath):
     # 生成onnx model
     onnxmodel = c2o.createOnnxModel()
     # 保存onnx model
-    saveonnxmodel(onnxmodel,OnnxSavePath+OnnxName)
+
+    # Apply shape inference on the model
+    print(" onnx model shape inference")
+    inferred_model = shape_inference.infer_shapes(onnxmodel)
+
+    # Check the model and print Y's shape information
+    onnx.checker.check_model(inferred_model)
+    print(" onnx model checked")
+
+    saveonnxmodel(inferred_model,OnnxSavePath+OnnxName)
 
 
 if __name__ == '__main__':

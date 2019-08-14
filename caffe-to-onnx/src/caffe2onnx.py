@@ -436,7 +436,7 @@ class Caffe2Onnx():
                 innernode = self.NodeList[i]
                 for k in range(len(innernode.outputs_shape)):
                     hid_out_tvi = helper.make_tensor_value_info(innernode.outputs_name[k], TensorProto.FLOAT,innernode.outputs_shape[k])
-                    self.onnxmodel.addValueInfoTVI(hid_out_tvi)
+                    # self.onnxmodel.addValueInfoTVI(hid_out_tvi)  #中间层信息由shape_inference进行推理填充
         print("2. add input and hidden info success.")
 
     #创建模型
@@ -453,7 +453,7 @@ class Caffe2Onnx():
             self.onnxmodel.init_t,
             value_info=self.onnxmodel.hidden_out_tvi
         )
-        model_def = helper.make_model(graph_def, producer_name='sun')
+        model_def = helper.make_model(graph_def, producer_name='ykx-nb')
         print("3. convert to onnx model success. ")
         return model_def
 
