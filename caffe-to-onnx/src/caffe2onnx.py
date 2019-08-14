@@ -94,7 +94,17 @@ class Caffe2Onnx():
             print("error:the caffe model has no input")
             return -1
 
-
+    def getBolobsShape(self, blobs):
+        ParamShape = []
+        for blob in blobs:
+            print ("blob.shape ", blob.shape)
+            if blob.shape.dim == []:
+                print ('blob.shape is none')
+                shape = [blob.num, blob.channels, blob.height, blob.width]
+                ParamShape.append(shape)
+            else:
+                ParamShape.append(blob.shape.dim)
+        return ParamShape
 
     #将参数添加到Inputs中,并生成tensor存储数据
     def __addInputsTVIfromParams(self,layer,ParamName,ParamType):
@@ -105,14 +115,14 @@ class Caffe2Onnx():
         for model_layer in self._ModelLayer:
             if layer.name == model_layer.name:
                 Params = copy.deepcopy(model_layer.blobs)
-                ParamShape = [p.shape.dim for p in Params]
+                # ParamShape = [p.shape.dim for p in Params]
+                ParamShape = self.getBolobsShape(Params)
                 ParamData = [p.data for p in Params]
                 # todo ? 丢弃最后一个维度？
                 if layer.type == "BatchNorm":
                     ParamShape = ParamShape[0:len(ParamShape) - 1]
                     ParamData = ParamData[0:len(ParamData) - 1]
                 break
-
 
         #判断是否有Param
         if ParamShape != []:
@@ -127,8 +137,9 @@ class Caffe2Onnx():
                 # print("------ ParamData[i] =", (ParamData[i]))
                 self.onnxmodel.addInputsTVI(p_tvi)
                 self.onnxmodel.addInitTensor(p_t)
-                print("add param " + ParamName[i] + "add inout and tensor")
+                print("add param " + ParamName[i] + " into InitTensor, shape=", ParamShape[i])
         return ParamName
+
 
     #手动将参数添加到输入信息中,并生成tensor存储数据
     def __addInputsTVIfromMannul(self,layer,ParamName,ParamType,ParamShape,ParamData):
@@ -139,7 +150,7 @@ class Caffe2Onnx():
             p_t = helper.make_tensor(Param_Name[i], ParamType[i], ParamShape[i], ParamData[i])
             self.onnxmodel.addInputsTVI(p_tvi)
             self.onnxmodel.addInitTensor(p_t)
-            print("add param "+Param_Name[i]+"add inout and tensor")
+            print("add param "+Param_Name[i]+" into InitTensor Mannul")
         return Param_Name
 
 
