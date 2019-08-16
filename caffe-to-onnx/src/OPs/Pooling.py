@@ -2,11 +2,13 @@ import numpy as np
 import src.c2oObject as Node
 ##-----------------------------------------------------Pooling层--------------------------------------------------##
 #获取超参数
-def getPoolingAttri(layer):
+def getPoolingAttri(layer, input_shape):
     ##池化核尺寸
     kernel_shape = np.array([layer.pooling_param.kernel_size]*2).reshape(1,-1)[0].tolist()
     if layer.pooling_param.kernel_size == []:
         kernel_shape = [layer.pooling_param.kernel_h,layer.pooling_param.kernel_w]
+    if layer.pooling_param.global_pooling:
+        kernel_shape = [input_shape[0][3], input_shape[0][3]]
     ##步长
     strides = [1, 1]#默认为1
     if layer.pooling_param.stride != []:
@@ -43,7 +45,7 @@ def getPoolingOutShape(input_shape,layer,dict):
     return output_shape
 #构建节点
 def createPooling(layer,nodename,inname,outname,input_shape):
-    dict = getPoolingAttri(layer)
+    dict = getPoolingAttri(layer, input_shape)
     output_shape = getPoolingOutShape(input_shape,layer,dict)
 
     #判断是池化种类,最大池化、平均池化

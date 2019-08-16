@@ -34,7 +34,7 @@ def get_numpy_from_img(file):
 
     img = cv2.imread(file)
     # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) #cv2默认为 BGR顺序，而其他软件一般使用RGB，所以需要转换
-    img = cv2.resize(img, (227, 227), interpolation=cv2.INTER_CUBIC)
+    #img = cv2.resize(img, (227, 227), interpolation=cv2.INTER_CUBIC)
     x = np.array(img, dtype=np.float32)
 
     # 矩阵转置换，img读取后的格式为W*H*C 转为model输入格式 C*W*H
