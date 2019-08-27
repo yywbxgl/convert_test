@@ -131,6 +131,18 @@ class Caffe2Onnx():
                 if layer.type == "BatchNorm":
                     ParamShape = ParamShape[0:len(ParamShape) - 1]
                     ParamData = ParamData[0:len(ParamData) - 1]
+                if layer.type == "PReLU":
+                    
+                    inname,input_shape = self.__getLastLayerOutNameAndShape(layer)
+                    # print(input_shape[0])
+                    # print(len(input_shape[0]))
+                    num = ParamShape[0][0]
+                    for i in input_shape[0][::-1]: # 倒叙遍历list
+                        if i != num:
+                            ParamShape[0].append(1)
+                        else:
+                            break
+                    print('____PRelu shape:', ParamShape[0])
                 break
 
         #判断是否有Param
@@ -356,9 +368,11 @@ class Caffe2Onnx():
                 nodename = Layers[i].name
 
                 #2.生成节点参数tensor value info,并获取节点参数名,将参数名加入节点输入名列表
-                paramshape = [input_shape[0]]
-                paramdata = [0.25 * np.ones(input_shape[0]).reshape(1, -1)[0]]
-                pname = self.__addInputsTVIfromMannul(Layers[i],op_pname["PRelu"],op_ptype["PRelu"],paramshape,paramdata)
+                # paramshape = [input_shape[0]]
+                # paramdata = [0.25 * np.ones(input_shape[0]).reshape(1, -1)[0]]
+                # pname = self.__addInputsTVIfromMannul(Layers[i],op_pname["PRelu"],op_ptype["PRelu"],paramshape,paramdata)
+
+                pname = self.__addInputsTVIfromParams(Layers[i],op_pname["PRelu"],op_ptype["PRelu"])
                 inname.extend(pname)
 
 

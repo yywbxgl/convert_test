@@ -70,7 +70,14 @@ def onnx_run(OnnxName, x):
 
 def classic_net_test(test_dir, protofile, caffemodel, img):
 
+    # 拷贝文件到output
+    os.system("cp %s %s"%(caffemodel, test_dir))
+    os.system("cp %s %s"%(protofile, test_dir))
+
     net = caffe.Net(protofile, caffemodel, caffe.TEST)
+    model_name = caffemodel.split('/')[-1]
+    model_name = model_name.split('.')[0]
+
     # (n,c,h,w) = net.blobs['data'].data.shape
     # x = np.random.rand(n,c,h,w).astype(np.float32) * 100
     x = get_numpy_from_img (img)
@@ -82,11 +89,10 @@ def classic_net_test(test_dir, protofile, caffemodel, img):
     # print output
     for output in out:
         y1 = net.blobs[output].data
-
     print("caffe output: \n", y1)
     
     # 保存Model, 和output
-    np.save(caffemodel+".output", y1)
+    np.save(test_dir + model_name + ".caffemodel.output", y1)
     print('output shape: ', y1.dtype, y1.shape)
     print(y1) 
     print("\n--------caffe run finish----------\n")
@@ -94,7 +100,7 @@ def classic_net_test(test_dir, protofile, caffemodel, img):
 
     # 2. 转换caffe model 到onnx, 在onnx-runtime上推理
     # 使用自定义的转换工具
-    cmd = "python3 %s %s %s  simple_net  %s"%(CONVERTER, protofile, caffemodel, test_dir)
+    cmd = "python3 %s %s %s  %s %s"%(CONVERTER, protofile, caffemodel, model_name ,test_dir)
     print(cmd)
     os.system(cmd)
 
@@ -104,9 +110,8 @@ def classic_net_test(test_dir, protofile, caffemodel, img):
     # onnx_model_file = test_dir + "simple_net.onnx"
     # onnxmltools.utils.save_model(onnx_model, onnx_model_file)
 
-    onnx_model_file = test_dir + "simple_net.onnx"
+    onnx_model_file = test_dir + model_name + ".onnx"
     y2 = onnx_run(onnx_model_file, x)
-
     print("output data shape: ", y2.dtype, y2.shape)
     print(y2)
     np.save(onnx_model_file +".output", y2)
@@ -116,7 +121,7 @@ def classic_net_test(test_dir, protofile, caffemodel, img):
     # ----------------------------------------------------------    
     # 3. onnx 编译成loadale 文件, 在VP上或者FPGA上运行loadable，获取output
     # todo 添加input数据到onnx model中
-    loadable = test_dir + "/simple_net.nvdla"
+    loadable = test_dir + model_name + ".nvdla"
     os.system("%s -o %s %s"%(COMPILER, loadable, onnx_model_file))
     # os.system("cp conv.nvdla  /home/sunqiliang/onnc//home/sunqiliang/onnc/r1.2.0-ubuntu1604/r1.2.0/bin/onnc.nv_fullr1.2.0-ubuntu1604/full_V_riscv64/")
     # os.system("cp conv.nvdla  %s"%(test_dir))
