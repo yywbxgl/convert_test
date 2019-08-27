@@ -24,8 +24,8 @@ def _random_graph(t):
 		"shape":shape})
 
 	#convolution
-	choice_list = list(filter(lambda x: True if (x[2]==0 or x[2]==x[0]//2) and x[0]>=x[1] and H+x[2]*2-x[0]>=0 and (H+x[2]*2-x[0])%x[1]==0 else False,
-		itertools.product(range(1,12,2), range(1, 12), range(0,6))))
+	choice_list = list(filter(lambda x: True if (x[2]==0 or x[2]==(1+x[3]*(x[0]-1))//2) and 1+x[3]*(x[0]-1)>=x[1] and H+x[2]*2-(1+x[3]*(x[0]-1))>=0 and (H+x[2]*2-(1+x[3]*(x[0]-1)))%x[1]==0 else False,
+		itertools.product(range(1,12,2), range(1, 12), range(0,6), range(1,6))))
 	if len(choice_list)==0:
 		return None
 	#1~16
@@ -114,6 +114,7 @@ def random_result(arg, root_dir):
 				s += '    kernel_size: %d\n' % (i["kernel_size"],)
 				s += '    stride: %d\n' % (i["stride"],)
 				s += '    pad:%d\n' % (i["pad"],)
+				s += '    dilation:%d\n' % (i["dilation"],)
 				s += '  }\n'
 				s += '}\n'
 				layer_name = "conv1"
@@ -228,11 +229,13 @@ class test_inference(object):
 			d = data
 		stride = node["stride"]
 		kernel_size = node["kernel_size"]
-		X = (d.shape[1]-kernel_size)//stride+1
+		dilation = node["dilation"]
+		conv_size = 1+dilation*(kernel_size-1)
+		X = (d.shape[1]-conv_size)//stride+1
 		data = np.zeros((node["num_output"], X, X)).astype(np.int32)
 		for c,h,w in itertools.product(*map(lambda x:range(x),data.shape)):
 			data[c,h,w] = np.vdot(
-						d[:, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size],
+						d[:, h*stride:h*stride+conv_size:dilation, w*stride:w*stride+conv_size:dilation],
 						weight[c]
 						)
 		return data
