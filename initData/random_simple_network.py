@@ -263,10 +263,10 @@ class test_inference(object):
 		X = (d.shape[1]-kernel_size)//stride+1
 		data = np.zeros((node["num_output"], X, X)).astype(np.float32)
 		for c,h,w in itertools.product(*map(lambda x:range(x),data.shape)):
-			data[c,h,w] = np.sum(np.multiply(
+			data[c,h,w] = np.vdot(
 						d[:, h*stride:h*stride+kernel_size, w*stride:w*stride+kernel_size],
 						weight[c]
-						)) + bias[c]
+						) + bias[c]
 		return data
 	def relu(self, data, node):
 		return np.where(data>0.0,data,0.0)
