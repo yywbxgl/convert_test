@@ -24,19 +24,20 @@ def _random_graph(t):
 		"shape":shape})
 
 	#convolution
-	choice_list = list(filter(lambda x: True if (x[2]==0 or x[2]==(1+x[3]*(x[0]-1))//2) and 1+x[3]*(x[0]-1)>=x[1] and H+x[2]*2-(1+x[3]*(x[0]-1))>=0 and (H+x[2]*2-(1+x[3]*(x[0]-1)))%x[1]==0 else False,
+	choice_list = list(filter(lambda x:(lambda conv_size, stride, pad : pad in (0, conv_size//2) and conv_size>=stride and H+pad*2-conv_size>=0 and (H+pad*2-conv_size)%stride==0)(1+x[3]*(x[0]-1), x[1], x[2]),
 		itertools.product(range(1,12,2), range(1, 12), range(0,6), range(1,6))))
 	if len(choice_list)==0:
 		return None
 	#1~16
 	num_output = np.random.randint(1, 17)
-	kernel_size, stride, pad = choice_list[np.random.randint(0,len(choice_list))]
+	kernel_size, stride, pad, dilation = choice_list[np.random.randint(0,len(choice_list))]
 	ret.append({"type":"Convolution",
 		"name":"conv1",
 		"num_output":num_output,
 		"kernel_size":kernel_size,
 		"stride":stride,
-		"pad":pad})
+		"pad":pad,
+		"dilation":dilation})
 	if t=='Convolution':
 		return ret
 	X = (shape[1]+pad*2-kernel_size)//stride+1
