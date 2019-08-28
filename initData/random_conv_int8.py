@@ -84,7 +84,6 @@ def random_graph(t='Convolution'):
 	while True:
 		graph = _random_graph(t)
 		if graph != None and _check(graph) == True:
-		#if graph != None:
 			return graph
 
 def random_result(arg, root_dir):
@@ -157,7 +156,6 @@ def random_result(arg, root_dir):
 	sys.stdout.write(open(prototxt, 'r').read())
 
 	global reg
-	# to do, numpy
 	for i in arg:
 		if i["type"] == "Input":
 			reg['FEATURE:IN:C'], reg['FEATURE:IN:H'], reg['FEATURE:IN:W'] = map(lambda x:x-1,i["shape"])
@@ -170,8 +168,8 @@ def random_result(arg, root_dir):
 			reg['CONV:WEIGHT:SHAPE:K'], reg['CONV:WEIGHT:SHAPE:C'], reg['CONV:WEIGHT:SHAPE:H'], reg['CONV:WEIGHT:SHAPE:W'] = i["num_output"]-1, shape[0]-1, i["kernel_size"]-1, i["kernel_size"]-1
 			reg['CONV:STRIDE:X_STRIDE'] = i["stride"] - 1
 			reg['CONV:STRIDE:Y_STRIDE'] = i["stride"] - 1
-			reg['CONV:DILATION:X_DILATION'] = 1 - 1
-			reg['CONV:DILATION:Y_DILATION'] = 1 - 1
+			reg['CONV:DILATION:X_DILATION'] = i["dilation"] - 1
+			reg['CONV:DILATION:Y_DILATION'] = i["dilation"] - 1
 			reg['CONV:PAD:PAD_LEFT'] = i["pad"]
 			reg['CONV:PAD:PAD_RIGHT'] = i["pad"]
 			reg['CONV:PAD:PAD_TOP'] = i["pad"]
@@ -317,19 +315,13 @@ def inference(root_dir):
 	npy = root_dir + "inference-output-result"
 	np.save(npy, r['data'].astype(np.int8))
 
-	#get_v = lambda a,i:a if i==() else get_v(a[i[0]],i[1:])
 	mk_list = lambda shape:[None]*shape[0] if len(shape)==1 else [mk_list(shape[1:])] if shape[0]==1 else mk_list((shape[0]-1,)+shape[1:]) + mk_list((1,)+shape[1:])
-	#lst = reduce(lambda r,n:[r]*n,reversed(r['data'].shape),None)
 	lst = mk_list(r['data'].shape)
 	for i,j,k in itertools.product(*map(lambda x:range(x),r['data'].shape)):
-		#print(i,j,k,r['data'].astype(np.uint8)[i,j,k])
 		lst[i][j][k] = "%#04x" % (r['data'].astype(np.uint8)[i,j,k],)
 	print(lst, file=open(root_dir + 'result.txt', 'w'))
-	#a = np.max(r['data'])
-	#b = np.min(r['data'])
-	#if max(a,b)>127 or min(a,b)<-128:
-	#	print('ERROR!!!!!!!!!!!!!!')
 	print(npy + '.npy', r['data'].shape)
+
 	global reg
 	#reg["FEATURE:OUT:C"], reg["FEATURE:OUT:H"], reg["FEATURE:OUT:W"] = r['data'].shape
 	reg["SDP:CVT:OFFSET"] = np.array([r['offset']]).astype(np.int32).astype(np.uint32)[0]
