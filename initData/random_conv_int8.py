@@ -9,15 +9,17 @@ import numpy as np
 from functools import reduce
 import itertools
 
-def _random_graph(t):
+def _random_graph(conf, t):
 	"""
 	测试过程中，一般以下超参是被指定的，而不是随机
 	所以具体测试时，手动修改指定超参
 	"""
 	ret = []
 	#input feature map 
-	C = np.random.randint(1,4)
-	H = np.random.randint(5,20)
+	arr = lambda name : (lambda a : a if isinstance(a, tuple) else list(range(*a)))(conf[name])
+	rand = lambda name : (lambda v:v[np.random.randint(len(v))])(arr(name))
+	C = rand("C")
+	H = rand("H")
 	shape = (C,H,H)
 	ret.append({"type":"Input",
 		"name":"data",
@@ -25,11 +27,10 @@ def _random_graph(t):
 
 	#convolution
 	choice_list = list(filter(lambda x:(lambda conv_size, stride, pad : pad in (0, conv_size//2) and conv_size>=stride and H+pad*2-conv_size>=0 and (H+pad*2-conv_size)%stride==0)(1+x[3]*(x[0]-1), x[1], x[2]),
-		itertools.product(range(1,12,2), range(1, 12), range(0,6), range(1,6))))
+		itertools.product(arr("kernel_size"), arr("stride"), arr("pad"), arr("dilation"))))
 	if len(choice_list)==0:
 		return None
-	#1~16
-	num_output = np.random.randint(1, 17)
+	num_output = rand("K")
 	kernel_size, stride, pad, dilation = choice_list[np.random.randint(0,len(choice_list))]
 	ret.append({"type":"Convolution",
 		"name":"conv1",
@@ -73,7 +74,7 @@ def _check(graph):
 	reg['BANK:WEIGHT_BANK'] = weight_banks - 1
 	return True
 
-def random_graph(t='Convolution'):
+def random_graph(conf, t='Convolution'):
 	"""
 	参数如果不传，或者传'Convolution'，则是生成单个卷积
 	如果传'Network'，则是生成简单网络
@@ -82,7 +83,7 @@ def random_graph(t='Convolution'):
 	if t!='Convolution' and t!='Network':
 		return None
 	while True:
-		graph = _random_graph(t)
+		graph = _random_graph(conf, t)
 		if graph != None and _check(graph) == True:
 			return graph
 
@@ -431,28 +432,52 @@ def write_ini(reg, ini):
 			else:
 				f.write('%s = %#x\n' % (i, reg[i]))
 
-#def write_json(reg, json_file):
-#	print(reg, file=open(json_file, "w"))
+def write_json(reg, json_file):
+	with open(json_file, "w") as f:
+		f.write('{\n')
+		for i, k in enumerate(sorted(reg.keys())):
+			#print(i, k, reg[k])
+			f.write('\t"%s" : %d' % (k, np.array([reg[k]]).astype(np.int32)[0]) + (',\n' if i<len(reg)-1 else '\n'))
+		f.write('}\n')
 	
 if __name__ == '__main__':
 	root_dir = './'
-	if len(sys.argv) > 1:
-		root_dir = sys.argv[1]
-
-	if len(root_dir) == 0:
-		root_dir = './'
-	elif root_dir[-1] != '/':
-		root_dir += '/'
+	conf = { "C" : [1,4],
+		"H" : [5,20],
+		"K" : [1,17],
+		"kernel_size" : [1,12,2],
+		"stride" : [1,12],
+		"pad" : [0,6],
+		"dilation" : [1,6]
+		}
+	for arg in sys.argv[1:]:
+		if arg == '-h':
+			print("For example:\n\t" + sys.argv[0] + " C=1:4 H=5:20 K=1:17 kernel_size=1:12:2 stride=1:12 pad=0:6 dilation=1,2,3,4,5 ./")
+			exit(0)
+		i = arg.find('=')
+		if i<0:
+			root_dir = arg
+			if root_dir[-1] != '/':
+				root_dir += '/'
+			continue
+		v_str = arg[i+1:]
+		if v_str.find(':') >= 0:
+			v = list(map(int,v_str.split(':')))
+			if len(v) == 2:
+				v += [1 if v[1]>v[0] else -1]
+		else:
+			v = tuple(map(int,v_str.split(',')))
+		conf[arg[:i]] = v
 
 	reg = {}
 	reg['CDMA:CVT_EN'] = 0
 
-	# 随机生成简单网络，如果random_graph不带参数，则只生成一个卷积
-	graph = random_graph()
+	# 随机生成简单网络，如果random_graph不带参数t，则只生成一个卷积
+	graph = random_graph(conf)
 	# 将prototxt和相应的npy生成在root_dir所存的目录
 	random_result(graph, root_dir)
 	# numpy下的推理，比较慢，但可以拿来对比
 	inference(root_dir)
 	convert_numpy(root_dir)
 	write_ini(reg, root_dir+'reg.ini')
-	#write_json(reg, root_dir+'reg.json')
+	write_json(reg, root_dir+'reg.json')
