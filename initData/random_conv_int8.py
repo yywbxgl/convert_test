@@ -16,8 +16,10 @@ def _random_graph(conf, t):
 	"""
 	ret = []
 	#input feature map 
+	#组合算子
+	compose = lambda *lst : lst[0] if len(lst)==1 else lambda *s : lst[0](lst[1](*s)) if len(lst)==2 else lst[0](compose(*lst[1:])(*s))
 	arr = lambda name : (lambda a : a if isinstance(a, tuple) else list(range(*a)))(conf[name])
-	rand = lambda name : (lambda v:v[np.random.randint(len(v))])(arr(name))
+	rand = compose(lambda v:v[np.random.randint(len(v))], arr)
 	C = rand("C")
 	H = rand("H")
 	shape = (C,H,H)
