@@ -19,7 +19,9 @@ def _random_graph(conf, t):
 	#组合算子
 	compose = lambda *lst : lst[0] if len(lst)==1 else lambda *s : lst[0](lst[1](*s)) if len(lst)==2 else lst[0](compose(*lst[1:])(*s))
 	arr = lambda name : (lambda a : a if isinstance(a, tuple) else list(range(*a)))(conf[name])
-	rand = compose(lambda v:v[np.random.randint(len(v))], arr)
+	#rand = lambda name : (lambda v:v[np.random.randint(len(v))])(arr(name))
+	random_select = lambda lst:lst[np.random.randint(len(lst))]
+	rand = compose(random_select, arr)
 	C = rand("C")
 	H = rand("H")
 	shape = (C,H,H)
@@ -33,7 +35,7 @@ def _random_graph(conf, t):
 	if len(choice_list)==0:
 		return None
 	num_output = rand("K")
-	kernel_size, stride, pad, dilation = choice_list[np.random.randint(0,len(choice_list))]
+	kernel_size, stride, pad, dilation = random_select(choice_list)
 	ret.append({"type":"Convolution",
 		"name":"conv1",
 		"num_output":num_output,
@@ -49,16 +51,17 @@ def _random_graph(conf, t):
 	return ret
 
 def _check(graph):
+	bank_size = 32 * 1024
 	for i in graph:
 		if i["type"] == "Input":
 			shape = i["shape"]
+			feature_size = shape[0] * shape[1] * ((shape[2]+1)//2*2)
+			feature_banks = (feature_size + (bank_size-1)) // bank_size
 		elif i["type"] == "Convolution":
-			bank_size = 32 * 1024
-			weight_size = i["num_output"] * shape[0] * i["kernel_size"] * i["kernel_size"] * 2
-			weight_size = (weight_size + 127) // 128 * 128
+			weight_size = i["num_output"] * shape[0] * i["kernel_size"] * i["kernel_size"]
+			weight_size = (weight_size + 511) // 512 * 512
 			weight_banks = (weight_size + (bank_size-1)) // bank_size
-			feature_banks = 16 - weight_banks
-			if weight_banks>15 or feature_banks*1024//i["kernel_size"]<1:
+			if weight_banks+feature_banks > 16:
 				return False
 			X = (shape[1]+i["pad"]*2-i["kernel_size"])//i["stride"]+1
 			shape = (i["num_output"], X, X)
@@ -330,6 +333,8 @@ def inference(root_dir):
 	reg["SDP:CVT:OFFSET"] = np.array([r['offset']]).astype(np.int32).astype(np.uint32)[0]
 	reg["SDP:CVT:SCALE"] = np.array([r['mul']]).astype(np.int32).astype(np.uint32)[0]
 	reg["SDP:CVT:SHIFT"] = r['rshift']
+	reg['FEATURE:OUT:STRIDE:LINE_STRIDE'] = r['data'].shape[2] * 32
+	reg['FEATURE:OUT:STRIDE:SURF_STRIDE'] = r['data'].shape[2] * r['data'].shape[1] * 32
 
 def convert_weight_numpy(npy, dat):
 	weight = np.load(npy).astype(np.uint8)
@@ -396,12 +401,12 @@ def convert_feature_numpy(npy, dat, is_wr_reg = True):
 	with open(dat, 'w') as f:
 		f.write('{\n')
 		addr = 0
-		line_stride = W*32*2
-		surface_stride = W*H*32*2
+		line_stride = W*32
+		surface_stride = W*H*32
 		if is_wr_reg:
 			global reg
-			reg['FEATURE:STRIDE:LINE_STRIDE'] = line_stride
-			reg['FEATURE:STRIDE:SURF_STRIDE'] = surface_stride
+			reg['FEATURE:IN:STRIDE:LINE_STRIDE'] = line_stride
+			reg['FEATURE:IN:STRIDE:SURF_STRIDE'] = surface_stride
 		for t, pos in next_pos((0,0,0)):
 			if addr%16==0:
 				if t==2:
@@ -424,7 +429,7 @@ def convert_numpy(root_dir):
 def write_ini(reg, ini):
 	with open(ini, 'w') as f:
 		section = ""
-		for i in sorted(reg.keys()):
+		for i in sorted(reg.keys(), key=lambda k:(len(k.split(":")),k)):
 			s = i[:i.find(":")]
 			if s != section:
 				section = s
@@ -437,7 +442,7 @@ def write_ini(reg, ini):
 def write_json(reg, json_file):
 	with open(json_file, "w") as f:
 		f.write('{\n')
-		for i, k in enumerate(sorted(reg.keys())):
+		for i, k in enumerate(sorted(reg.keys(), key=lambda k:(len(k.split(":")),k))):
 			#print(i, k, reg[k])
 			f.write('\t"%s" : %d' % (k, np.array([reg[k]]).astype(np.int32)[0]) + (',\n' if i<len(reg)-1 else '\n'))
 		f.write('}\n')
