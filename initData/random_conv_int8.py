@@ -55,13 +55,16 @@ def _check(graph):
 	for i in graph:
 		if i["type"] == "Input":
 			shape = i["shape"]
-			feature_size = shape[0] * shape[1] * ((shape[2]+1)//2*2)
+			#feature_size = ((shape[0]+31)//32*32) * shape[1] * ((shape[2]+1)//2*2)
+			c_groups = (shape[0]+31)//32
+			entries = (c_groups//2)*shape[2] + (c_groups%2)*((shape[2]+1)//2)
+			feature_size = (entries*shape[1]+511)//512*512*64
 			feature_banks = (feature_size + (bank_size-1)) // bank_size
 		elif i["type"] == "Convolution":
 			weight_size = i["num_output"] * shape[0] * i["kernel_size"] * i["kernel_size"]
 			weight_size = (weight_size + 511) // 512 * 512
 			weight_banks = (weight_size + (bank_size-1)) // bank_size
-			if weight_banks+feature_banks > 16:
+			if weight_banks + feature_banks > 16:
 				return False
 			X = (shape[1]+i["pad"]*2-i["kernel_size"])//i["stride"]+1
 			shape = (i["num_output"], X, X)
@@ -290,6 +293,10 @@ class test_inference(object):
 					break
 			return (i,float(max_num)/(1<<i))
 		r = max(map(lambda n:(n,)+get_v(max_num*n,min_num*n), range(1<<15)), key=lambda x:x[2])
+		# 当所有的数据相等的时候，这里会有问题，此时offset后数据全为0
+		# 取乘数为1,移位为0
+		if max_num == min_num:
+			r = (1, 7)
 		mul = r[0]
 		rshift = r[1]-7
 		return {"offset":offset, "mul":mul, "rshift":rshift, "data":rshift_round_numpy((ret.astype(np.int64)-offset)*mul, rshift), "data_origin":ret}
