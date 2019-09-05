@@ -7,7 +7,7 @@ int main(int argc, char **argv)
 	int i;
 	int size;
 
-	if(read_numpy(argv[1], &t)) {
+	if(numpy_read(argv[1], &t)) {
 		printf("%s:%d:ERROR\n", __FILE__, __LINE__);
 	}
 	size = 1;
@@ -21,7 +21,6 @@ int main(int argc, char **argv)
 		printf("%hhd ", t.data[i]);
 	}
 	printf("\n");
-	free(t.shape);
-	free(t.data);
+	tensor_free(&t);
 	return 0;
 }

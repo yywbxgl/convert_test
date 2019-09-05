@@ -3,7 +3,7 @@
 #include <string.h>
 #include "npy_array.h"
 
-int read_numpy(const char *npy_file, tensor_int8_t *pt)
+int numpy_read(const char *npy_file, tensor_int8_t *pt)
 {
 	FILE *f;
 	char s[1024];
@@ -63,3 +63,12 @@ int read_numpy(const char *npy_file, tensor_int8_t *pt)
 	fclose(f);
 	return 0;
 }
+
+int tensor_free(tensor_int8_t *pt)
+{
+	free(pt->shape);
+	pt->shape = NULL;
+	free(pt->data);
+	pt->data = NULL;
+}
+

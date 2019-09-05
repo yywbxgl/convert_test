@@ -5,5 +5,6 @@ typedef struct {
 	int shape_order;
 	char *data;
 } tensor_int8_t; 
-int read_numpy(const char *npy_file, tensor_int8_t *pt);
+int numpy_read(const char *npy_file, tensor_int8_t *pt);
+int tensor_free(tensor_int8_t *pt);
 #endif
