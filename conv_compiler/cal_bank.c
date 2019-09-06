@@ -22,7 +22,7 @@ int max_height_in_banks(int banks, int channel, int width)
 {
 	int shape[3];
 	int height;
-	int c_groups, entries, feature_size;
+	int c_groups, entries;
 
 	c_groups = (channel+31)/32;
 	entries = (c_groups/2)*width+ (c_groups%2)*((width+1)/2);

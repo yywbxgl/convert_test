@@ -64,7 +64,7 @@ int numpy_read(const char *npy_file, tensor_int8_t *pt)
 	return 0;
 }
 
-int tensor_free(tensor_int8_t *pt)
+void tensor_free(tensor_int8_t *pt)
 {
 	free(pt->shape);
 	pt->shape = NULL;

@@ -1,12 +1,14 @@
 .PHONY : all clean
 EXE = conv-split
 SRC = $(wildcard *.c)
+OBJ = $(SRC:%.c=%.o)
+DEP = $(SRC:%.c=%.d)
 CC = gcc
-CFLAGS = -I include -O2 -MMD
-LDFLAGS = 
+CFLAGS = -Wall -I include -O2 -MMD
+LDFLAGS = -s
 all: $(EXE)
-$(EXE) : $(SRC:%.c=%.o)
+$(EXE) : $(OBJ)
 	$(CC) $(LDFLAGS) $^ -o $@
 clean:
 	$(RM) $(wildcard *.o *.d $(EXE))
--include $(SRC:%.c=%.d)
+-include $(DEP)
