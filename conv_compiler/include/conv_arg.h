@@ -1,7 +1,6 @@
 #ifndef __CONV_ARG_H__
 #define __CONV_ARG_H__
-#define DRAM_PHY_ADDR 0xc0000000
-#define DRAM_SIZE 0x10000000
+extern unsigned DRAM_PHY_ADDR, DRAM_SIZE;
 typedef struct {
 	char *featuremap_file; /*输入featuremap的numpy文件*/
 	char *weight_file; /*卷积核的numpy文件*/

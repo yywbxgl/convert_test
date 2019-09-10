@@ -41,14 +41,20 @@ int main(int argc, char **argv)
 		for(i=0;i<size;i++) {
 			p[i] = v--;
 		}
-	} else {
-		sscanf(argv[3], "%i", &offset);
-		if(argc == 4) {
+	} else if(strcmp(argv[3], "read") == 0) {
+		int i;
+		for(i=4;i<argc;i++) {
+			sscanf(argv[i], "%i", &offset);
 			printf("%hhu\n", p[offset]);
-		} else if(argc == 5) {
-			sscanf(argv[4], "%hhu", &v);
+		}
+	} else if(strcmp(argv[3], "write") == 0) {
+		int i;
+		for(i=4;i<argc;i++) {
+			sscanf(argv[i], "%i,%hhu", &offset, &v);
 			p[offset] = v;
 		}
+	} else {
+		printf("ERROR\n");
 	}
 
 	munmap(p, size);

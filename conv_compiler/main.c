@@ -15,21 +15,24 @@
 #include "include/conv_arg.h"
 
 conv_arg_t conv_arg; /*所处理卷积的参数*/
+unsigned DRAM_PHY_ADDR = 0xc0000000; /*DRAM的起始物理地址*/
+unsigned DRAM_SIZE = 0x10000000; /*所使用DRAM的大小*/
+const char *conv_cmd = "./conv"; /*单个卷积的命令*/
 
 static int parse_arg(int argc, char **argv)
 {
 	int ret;
 
-	while((ret = getopt(argc, argv, "d:w:D:s:p:c:")) >= 0) {
+	while((ret = getopt(argc, argv, "d:D:w:s:p:c:R:r:e:h")) >= 0) {
 		switch((char)ret) {
+			case 'd':
+				conv_arg.conv_dilation = atoi(optarg);
+				break;
 			case 'D':
 				conv_arg.featuremap_file = optarg;
 				break;
-			case 'W':
+			case 'w':
 				conv_arg.weight_file = optarg;
-				break;
-			case 'd':
-				conv_arg.conv_dilation = atoi(optarg);
 				break;
 			case 's':
 				conv_arg.conv_stride = atoi(optarg);
@@ -43,6 +46,18 @@ static int parse_arg(int argc, char **argv)
 						&conv_arg.cvt_scale,
 						&conv_arg.cvt_shift);
 				break;
+			case 'R':
+				sscanf(optarg, "%x", &DRAM_PHY_ADDR);
+				break;
+			case 'r':
+				sscanf(optarg, "%x", &DRAM_PHY_ADDR);
+				break;
+			case 'e':
+				conv_cmd = optarg;
+				break;
+			case 'h':
+				fprintf(stdout, "%s -d dialtion -D featuremap -w weight -s stride -p pad -c offset,scale,shift -R DRAM_PHY_ADDR -r DRAM_PHY_ADDR -e conv_cmd\n", argv[0]);
+				exit(0);
 			default:
 				return -1;
 				break;
@@ -119,7 +134,7 @@ int main(int argc, char **argv)
 		if(pid == 0) {
 			char s[20];
 			sprintf(s, "%d.conf", i);
-			execlp("./conv", "conv", "-c", s, NULL);
+			execlp(conv_cmd, conv_cmd, "-c", s, NULL);
 		} else if(pid > 0) {
 			int status;
 			if(waitpid(pid, &status, 0) < 0) {

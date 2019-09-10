@@ -61,7 +61,7 @@ int write_conf(const conv_arg_t *pc, const conv_block_t *blk, const char* name_c
 	dst_line_stride = 32 * pc->dataout_shape[2];
 	dst_surface_stride = dst_line_stride * pc->dataout_shape[1];
 
-	if((f = fopen(name_conf_file, "rb")) == NULL) {
+	if((f = fopen(name_conf_file, "wb")) == NULL) {
 		fprintf(stderr, "%s:%d", __FILE__, __LINE__);
 		return 1;
 	}
