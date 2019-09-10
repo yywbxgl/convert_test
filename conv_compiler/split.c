@@ -124,9 +124,9 @@ int write_conf(const conv_arg_t *pc, const conv_block_t *blk, const char* name_c
 	} else {
 		fprintf(f, "\t\"dst_surface_pack\" : %d,\n", 0);
 	}
-	fprintf(f, "\t\"dst_c\" : %d\n", pc->dataout_shape[0]);
-	fprintf(f, "\t\"dst_h\" : %d\n", pc->dataout_shape[1]);
-	fprintf(f, "\t\"dst_w\" : %d\n", pc->dataout_shape[2]);
+	fprintf(f, "\t\"dst_c\" : %d,\n", pc->dataout_shape[0]);
+	fprintf(f, "\t\"dst_h\" : %d,\n", pc->dataout_shape[1]);
+	fprintf(f, "\t\"dst_w\" : %d,\n", pc->dataout_shape[2]);
 	fprintf(f, "\n\n");
 
 

@@ -64,8 +64,8 @@ def _check(graph):
 			weight_size = i["num_output"] * shape[0] * i["kernel_size"] * i["kernel_size"]
 			weight_size = (weight_size + 511) // 512 * 512
 			weight_banks = (weight_size + (bank_size-1)) // bank_size
-			if weight_banks + feature_banks > 16:
-				return False
+			#if weight_banks + feature_banks > 16:
+			#	return False
 			X = (shape[1]+i["pad"]*2-i["kernel_size"])//i["stride"]+1
 			shape = (i["num_output"], X, X)
 		elif i["type"] == "ReLU":
