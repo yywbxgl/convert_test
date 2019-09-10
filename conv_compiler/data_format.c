@@ -1,8 +1,9 @@
 #include "data_format.h"
+#include <string.h>
 
 int featuremap_npy_to_nvdla(tensor_int8_t *pt, char *mem)
 {
-	int i, pad, offset;
+	int offset;
 	int CC,HH,WW;
 	int c,h,w;
 	CC = pt->shape[0];
@@ -31,12 +32,6 @@ int featuremap_npy_to_nvdla(tensor_int8_t *pt, char *mem)
 			w = 0;
 		} else {
 			break;
-		}
-	}
-	if(offset%128 != 0) {
-		pad = 128 - offset%128;
-		for(i=0;i<pad;i++) {
-			mem[offset++] = 0;
 		}
 	}
 	return offset;
@@ -88,6 +83,11 @@ int weight_npy_to_nvdla(tensor_int8_t *pt, char *mem)
 		} else {
 			break;
 		}
+	}
+	if(offset%128 != 0) {
+		int pad = 128 - offset%128;
+		memset(&mem[offset], 0, pad);
+		offset += pad;
 	}
 	return offset;
 }

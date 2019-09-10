@@ -20,7 +20,7 @@ static int parse_arg(int argc, char **argv)
 {
 	int ret;
 
-	while((ret = getopt(argc, argv, "d:w:D:s:p:")) >= 0) {
+	while((ret = getopt(argc, argv, "d:w:D:s:p:c:")) >= 0) {
 		switch((char)ret) {
 			case 'D':
 				conv_arg.featuremap_file = optarg;
@@ -36,6 +36,12 @@ static int parse_arg(int argc, char **argv)
 				break;
 			case 'p':
 				conv_arg.conv_pad = atoi(optarg);
+				break;
+			case 'c':
+				sscanf(optarg, "%d,%d,%d",
+						&conv_arg.cvt_offset,
+						&conv_arg.cvt_scale,
+						&conv_arg.cvt_shift);
 				break;
 			default:
 				return -1;
@@ -77,7 +83,7 @@ static int put_data_to_dram(conv_arg_t *pc)
 	p += len;
 	numpy_read(pc->weight_file, &t);
 	memcpy(pc->weight_shape, t.shape, sizeof(int)*4);
-	pc->addr_weght = p;
+	pc->addr_weight = p;
 	len = weight_npy_to_nvdla(&t, p);
 	tensor_free(&t);
 	p += len;
@@ -93,13 +99,35 @@ static int put_data_to_dram(conv_arg_t *pc)
 
 int main(int argc, char **argv)
 {
-	int ret;
 	conv_block_t *blk;
+	int i, blk_cnt;
+	pid_t pid;
 
 	parse_arg(argc, argv);
 	addr_map(&conv_arg);
 	put_data_to_dram(&conv_arg);
-	ret = split_conv(&conv_arg, &blk);
+	blk_cnt = split_conv(&conv_arg, &blk);
+	for(i=0;i<blk_cnt;i++) {
+		char s[20];
+		sprintf(s, "%d.conf", i);
+		if(write_conf(&conv_arg, blk+i, s)) {
+			return 1;
+		}
+	}
+	for(i=0;i<blk_cnt;i++) {
+		pid = fork();
+		if(pid == 0) {
+			char s[20];
+			sprintf(s, "%d.conf", i);
+			execlp("./conv", "conv", "-c", s, NULL);
+		} else if(pid > 0) {
+			int status;
+			if(waitpid(pid, &status, 0) < 0) {
+				perror("waitpid");
+			}
+		}
+	}
+
 
 	return 0;
 }

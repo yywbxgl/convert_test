@@ -1,5 +1,5 @@
 #include "cal_bank.h"
-int banks_featuremap_cal(int *shape)
+int banks_featuremap_cal(const int *shape)
 {
 	int c_groups, entries, feature_size;
 	
@@ -9,7 +9,7 @@ int banks_featuremap_cal(int *shape)
 	return (feature_size + BANK_SIZE - 1)/BANK_SIZE;
 }
 
-int banks_weight_cal(int *shape)
+int banks_weight_cal(const int *shape)
 {
 	int weight_size;
 
