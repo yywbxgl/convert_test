@@ -131,8 +131,8 @@ int write_conf(const conv_arg_t *pc, const conv_block_t *blk, const char* name_c
 
 
 	fprintf(f, "\t\"sdp_cvt_offset\" : %d,\n", pc->cvt_offset);
-	fprintf(f, "\t\"sdp_cvt_scale\" : %d,\n", pc->cvt_offset);
-	fprintf(f, "\t\"sdp_cvt_shift\" : %d\n", pc->cvt_offset);
+	fprintf(f, "\t\"sdp_cvt_scale\" : %d,\n", pc->cvt_scale);
+	fprintf(f, "\t\"sdp_cvt_shift\" : %d\n", pc->cvt_shift);
 	fprintf(f, "}\n");
 	
 	fclose(f);
