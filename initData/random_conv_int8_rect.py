@@ -71,22 +71,13 @@ def _check(graph):
 			feature_size = (entries*shape[1]+511)//512*512*64
 			feature_banks = (feature_size + (bank_size-1)) // bank_size
 		elif i["type"] == "Convolution":
-			weight_size = i["num_output"] * shape[0] * i["kernel_size"] * i["kernel_size"]
+			weight_size = i["num_output"] * shape[0] * i["CONV_H"] * i["CONV_W"]
 			weight_size = (weight_size + 511) // 512 * 512
 			weight_banks = (weight_size + (bank_size-1)) // bank_size
 			#if weight_banks + feature_banks > 16:
 			#	return False
 			X = (shape[1]+i["pad"]*2-i["kernel_size"])//i["stride"]+1
 			shape = (i["num_output"], X, X)
-		elif i["type"] == "ReLU":
-			pass
-		elif i["type"] == "Pooling":
-			X = (shape[1]-i["kernel_size"])//i["stride"]+1
-			shape = (shape[0], X, X)
-		elif i["type"] == "InnerProduct":
-			if reduce(lambda a,b:a*b,shape,1) > 15000:
-				return False
-			shape = (i["num_output"],)
 	global reg
 	reg['BANK:FEATURE_BANK'] = feature_banks - 1
 	reg['BANK:WEIGHT_BANK'] = weight_banks - 1
@@ -107,73 +98,8 @@ def random_graph(conf, t='Convolution'):
 
 def random_result(arg, root_dir):
 	"""
-	根据神经网络结构随机产生prototxt/featuremap/weight/bias，并按照结构里的名字为文件命名
+	根据神经网络结构随机产生featuremap/weight/bias，并按照结构里的名字为文件命名
 	"""
-	prototxt = root_dir + 'deploy.prototxt'
-	with open(prototxt, 'w') as f:
-		print(prototxt)
-		s = 'name: "MyNet"\n'
-		for i in arg:
-			if i["type"] == "Input":
-				s += 'layer{\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  top:"data"\n'
-				s += '  input_param:{shape: {dim:1 dim:%d dim:%d dim:%d}}\n' % i["shape"]
-				s += '}\n'
-				layer_name = "data"
-			elif i["type"] == "Convolution":
-				s += 'layer{\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				s += '  top: "conv1"\n'
-				s += '  convolution_param {\n'
-				s += '    num_output: %d\n' % (i["num_output"],)
-				s += '    kernel_size: %d\n' % (i["kernel_size"],)
-				s += '    stride: %d\n' % (i["stride"],)
-				s += '    pad:%d\n' % (i["pad"],)
-				s += '    dilation:%d\n' % (i["dilation"],)
-				s += '  }\n'
-				s += '}\n'
-				layer_name = "conv1"
-			elif i["type"] == "ReLU":
-				s += 'layer {\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				#in_space
-				#s += '  top: "relu1"\n'
-				s += '  top: "%s"\n' % (layer_name,)
-				s += '}\n'
-				#layer_name = "relu1"
-			elif i["type"] == "Pooling":
-				s += 'layer {\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				s += '  top: "pool1"\n'
-				s += '  pooling_param {\n'
-				s += '    pool: MAX\n'
-				s += '    kernel_size: %d\n' % (i["kernel_size"],)
-				s += '    stride: %d\n' % (i["stride"],)
-				s += '  }\n'
-				s += '}\n'
-				layer_name = "pool1"
-			elif i["type"] == "InnerProduct":
-				s += 'layer {\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				s += '  top: "ip1"\n'
-				s += '  inner_product_param {\n'
-				s += '    num_output: %d\n' % (i["num_output"],)
-				s += '  }\n'
-				s += '}\n'
-
-		f.write(s)
-	sys.stdout.write(open(prototxt, 'r').read())
-
 	global reg
 	for i in arg:
 		if i["type"] == "Input":
