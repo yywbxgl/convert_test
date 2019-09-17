@@ -1,0 +1,52 @@
+type : "Input"
+name : "data"
+
+type : "Convolution"
+name : "conv1"
+pad : 1
+stride : 1
+dilation : 1
+kernel_size : 3
+group : 4
+num_output : 8
+
+type : "BiasAdd"
+name : "bias1"
+
+type : "BN"
+name : "BN1"
+
+type : "relu"
+name : "relu1"
+
+type : "Truncate"
+name : "tr1"
+rshift : 12
+
+type : "Cvt"
+offset : -18323
+mul : 1334
+rshift : 23
+
+type : "Pooling"
+stride : 2
+kernel_size : 3
+function : "max"
+
+type : "Convolution"
+name : "fc1"
+pad : 0
+stride : 1
+dilation : 1
+kernel_size : 7
+group : 1
+num_output : 10
+
+type : "BiasAdd"
+name : "bias2"
+
+type : "Cvt"
+offset : -1234589
+mul : 24456
+rshift : 23
+
