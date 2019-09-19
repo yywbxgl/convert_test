@@ -15,7 +15,7 @@
 #include "include/conv_arg.h"
 
 conv_arg_t conv_arg; /*所处理卷积的参数*/
-unsigned DRAM_PHY_ADDR = 0xc0000000; /*DRAM的起始物理地址*/
+unsigned DRAM_PHY_ADDR = 0xc0000000; /*本次可以使用DRAM的起始物理地址*/
 unsigned DRAM_SIZE = 0x10000000; /*所使用DRAM的大小*/
 const char *conv_cmd = "./conv"; /*单个卷积的命令*/
 
@@ -50,13 +50,13 @@ static int parse_arg(int argc, char **argv)
 				sscanf(optarg, "%x", &DRAM_PHY_ADDR);
 				break;
 			case 'r':
-				sscanf(optarg, "%x", &DRAM_PHY_ADDR);
+				sscanf(optarg, "%x", &DRAM_SIZE);
 				break;
 			case 'e':
 				conv_cmd = optarg;
 				break;
 			case 'h':
-				fprintf(stdout, "%s -d dialtion -D featuremap -w weight -s stride -p pad -c offset,scale,shift -R DRAM_PHY_ADDR -r DRAM_PHY_ADDR -e conv_cmd\n", argv[0]);
+				fprintf(stdout, "%s -d dialtion -D featuremap -w weight -s stride -p pad -c offset,scale,shift -R DRAM_PHY_ADDR -r DRAM_SIZE -e conv_cmd\n", argv[0]);
 				exit(0);
 			default:
 				return -1;

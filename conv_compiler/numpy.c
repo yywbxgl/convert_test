@@ -72,3 +72,53 @@ void tensor_free(tensor_int8_t *pt)
 	pt->data = NULL;
 }
 
+int numpy_write(const char *npy_file, const tensor_int8_t *pt)
+{
+	FILE *f;
+	char s[40];
+	char *p;
+	int i, size, n;
+	
+	if((f = fopen(npy_file, "wb")) == NULL) {
+		fprintf(stderr, "%s:%d write failed\n", __FILE__, __LINE__);
+		return -1;
+	}
+	s[0] = 0x93;
+	(void)fwrite(s, 1, 1, f);
+	fprintf(f, "NUMPY");
+	s[0] = 1;
+	s[1] = 0;
+	s[2] = 'v';
+	s[3] = 0;
+	(void)fwrite(s, 1, 4, f);
+
+
+	p = s;
+	for(i=0;i<pt->shape_order;i++) {
+		if(i==0) {
+			sprintf(p, "(%d%n", pt->shape[i], &n);
+		} else {
+			sprintf(p, ",%d%n", pt->shape[i], &n);
+		}
+		p += n;
+	}
+	sprintf(p, ")");
+
+	fprintf(f, "{\'descr\':\'|i1\',\'fortran_order\':False,\'shape\':%s,}", s);
+	size = 127-ftell(f);
+	s[0] = ' ';
+	for(i=0;i<size;i++) {
+		(void)fwrite(s, 1, 1, f);
+	}
+	s[0] = '\n';
+	(void)fwrite(s, 1, 1, f);
+	
+	size = 1;
+	for(i=0;i<pt->shape_order;i++) {
+		size *= pt->shape[i];
+	}
+	(void)fwrite(pt->data, 1, size, f);
+	
+	fclose(f);
+	return 0;
+}

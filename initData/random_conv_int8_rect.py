@@ -167,7 +167,7 @@ class test_inference(object):
 		weight = np.load(self.root_dir+node["name"]+'-weight'+'.npy').astype(np.int32)
 		if node["pad"] != 0:
 			X = node["pad"]*2 + data.shape[1]
-			d = np.zeros((data.shape[0], X, X)).astype(np.float32)
+			d = np.zeros((data.shape[0], X, X)).astype(np.int32)
 			d[:, node["pad"]:node["pad"]+data.shape[1], node["pad"]:node["pad"]+data.shape[2]] = data
 		else:
 			d = data

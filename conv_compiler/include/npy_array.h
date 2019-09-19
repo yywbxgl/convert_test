@@ -7,4 +7,5 @@ typedef struct {
 } tensor_int8_t; 
 int numpy_read(const char *npy_file, tensor_int8_t *pt);
 void tensor_free(tensor_int8_t *pt);
+int numpy_write(const char *npy_file, const tensor_int8_t *pt);
 #endif
