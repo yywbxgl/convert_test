@@ -271,4 +271,7 @@ if __name__ == '__main__':
 		root_dir = sys.argv[1]
 	if root_dir[-1] != '/':
 		root_dir += '/'
-	random_result(root_dir)
+	if len(sys.argv)>2 and sys.argv[2][:3].lower()=='inf':
+		np.save(root_dir + 'whole-net-inference-result', test_inference(root_dir).inference())
+	else:
+		random_result(root_dir)
