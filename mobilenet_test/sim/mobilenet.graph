@@ -3,7 +3,6 @@ name : "data"
 h : 224
 c : 3
 w : 224
-# Output shape : (3, 224, 224)
 
 type : "Convolution"
 name : "conv1"
@@ -13,31 +12,27 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 2
-# Output shape : (32, 112, 112)
 
 type : "BiasAdd"
 name : "bias2"
-# Output shape : (32, 112, 112)
+lshift : 0
 
 type : "BN"
 name : "BN3"
-# Output shape : (32, 112, 112)
+lshift : 0
 
 type : "Truncate"
 name : "tr4"
-rshift : 4
-# Output shape : (32, 112, 112)
+rshift : 0
 
 type : "ReLU"
 name : "relu5"
-# Output shape : (32, 112, 112)
 
 type : "Cvt"
-name : "cvt6"
-offset : 819865930
-mul : 21373
-rshift : 37
-# Output shape : (32, 112, 112)
+name : "cvt1"
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_1_1"
@@ -47,29 +42,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (32, 112, 112)
 
 type : "Cvt"
 name : "cvt_1_2"
-offset : -9017
-mul : 8959
-rshift : 22
-# Output shape : (32, 112, 112)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_1_3"
-# Output shape : (32, 112, 112)
+lshift : 0
 
 type : "ReLU"
 name : "relu_1_4"
-# Output shape : (32, 112, 112)
 
 type : "Cvt"
 name : "cvt_1_5"
-offset : 278186330
-mul : 31495
-rshift : 36
-# Output shape : (32, 112, 112)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_1_6"
@@ -79,26 +70,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (64, 112, 112)
 
 type : "BiasAdd"
 name : "bias_1_7"
-# Output shape : (64, 112, 112)
+lshift : 0
 
 type : "BN"
 name : "BN_1_8"
-# Output shape : (64, 112, 112)
+lshift : 0
 
 type : "ReLU"
 name : "relu_1_9"
-# Output shape : (64, 112, 112)
 
 type : "Cvt"
 name : "cvt_1_10"
-offset : -184340852
-mul : 18775
-rshift : 38
-# Output shape : (64, 112, 112)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_2_1"
@@ -108,29 +96,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 2
-# Output shape : (64, 56, 56)
 
 type : "Cvt"
 name : "cvt_2_2"
-offset : -450
-mul : 30055
-rshift : 23
-# Output shape : (64, 56, 56)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_2_3"
-# Output shape : (64, 56, 56)
+lshift : 0
 
 type : "ReLU"
 name : "relu_2_4"
-# Output shape : (64, 56, 56)
 
 type : "Cvt"
 name : "cvt_2_5"
-offset : 453305922
-mul : 151
-rshift : 29
-# Output shape : (64, 56, 56)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_2_6"
@@ -140,26 +124,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (128, 56, 56)
 
 type : "BiasAdd"
 name : "bias_2_7"
-# Output shape : (128, 56, 56)
+lshift : 0
 
 type : "BN"
 name : "BN_2_8"
-# Output shape : (128, 56, 56)
+lshift : 0
 
 type : "ReLU"
 name : "relu_2_9"
-# Output shape : (128, 56, 56)
 
 type : "Cvt"
 name : "cvt_2_10"
-offset : 5300309
-mul : 8311
-rshift : 37
-# Output shape : (128, 56, 56)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_3_1"
@@ -169,29 +150,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (128, 56, 56)
 
 type : "Cvt"
 name : "cvt_3_2"
-offset : -1098
-mul : 20307
-rshift : 23
-# Output shape : (128, 56, 56)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_3_3"
-# Output shape : (128, 56, 56)
+lshift : 0
 
 type : "ReLU"
 name : "relu_3_4"
-# Output shape : (128, 56, 56)
 
 type : "Cvt"
 name : "cvt_3_5"
-offset : 447161055
-mul : 9797
-rshift : 35
-# Output shape : (128, 56, 56)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_3_6"
@@ -201,26 +178,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (128, 56, 56)
 
 type : "BiasAdd"
 name : "bias_3_7"
-# Output shape : (128, 56, 56)
+lshift : 0
 
 type : "BN"
 name : "BN_3_8"
-# Output shape : (128, 56, 56)
+lshift : 0
 
 type : "ReLU"
 name : "relu_3_9"
-# Output shape : (128, 56, 56)
 
 type : "Cvt"
 name : "cvt_3_10"
-offset : -21629748
-mul : 8671
-rshift : 37
-# Output shape : (128, 56, 56)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_4_1"
@@ -230,29 +204,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 2
-# Output shape : (128, 28, 28)
 
 type : "Cvt"
 name : "cvt_4_2"
-offset : -5133
-mul : 21569
-rshift : 23
-# Output shape : (128, 28, 28)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_4_3"
-# Output shape : (128, 28, 28)
+lshift : 0
 
 type : "ReLU"
 name : "relu_4_4"
-# Output shape : (128, 28, 28)
 
 type : "Cvt"
 name : "cvt_4_5"
-offset : 522055941
-mul : 16783
-rshift : 36
-# Output shape : (128, 28, 28)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_4_6"
@@ -262,26 +232,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (256, 28, 28)
 
 type : "BiasAdd"
 name : "bias_4_7"
-# Output shape : (256, 28, 28)
+lshift : 0
 
 type : "BN"
 name : "BN_4_8"
-# Output shape : (256, 28, 28)
+lshift : 0
 
 type : "ReLU"
 name : "relu_4_9"
-# Output shape : (256, 28, 28)
 
 type : "Cvt"
 name : "cvt_4_10"
-offset : 38553
-mul : 32661
-rshift : 39
-# Output shape : (256, 28, 28)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_5_1"
@@ -291,29 +258,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (256, 28, 28)
 
 type : "Cvt"
 name : "cvt_5_2"
-offset : -17608
-mul : 18799
-rshift : 23
-# Output shape : (256, 28, 28)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_5_3"
-# Output shape : (256, 28, 28)
+lshift : 0
 
 type : "ReLU"
 name : "relu_5_4"
-# Output shape : (256, 28, 28)
 
 type : "Cvt"
 name : "cvt_5_5"
-offset : 503326629
-mul : 17407
-rshift : 36
-# Output shape : (256, 28, 28)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_5_6"
@@ -323,26 +286,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (256, 28, 28)
 
 type : "BiasAdd"
 name : "bias_5_7"
-# Output shape : (256, 28, 28)
+lshift : 0
 
 type : "BN"
 name : "BN_5_8"
-# Output shape : (256, 28, 28)
+lshift : 0
 
 type : "ReLU"
 name : "relu_5_9"
-# Output shape : (256, 28, 28)
 
 type : "Cvt"
 name : "cvt_5_10"
-offset : -9430983
-mul : 17063
-rshift : 38
-# Output shape : (256, 28, 28)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_6_1"
@@ -352,29 +312,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 2
-# Output shape : (256, 14, 14)
 
 type : "Cvt"
 name : "cvt_6_2"
-offset : 2435
-mul : 20907
-rshift : 23
-# Output shape : (256, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_6_3"
-# Output shape : (256, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_6_4"
-# Output shape : (256, 14, 14)
 
 type : "Cvt"
 name : "cvt_6_5"
-offset : 489008560
-mul : 17917
-rshift : 36
-# Output shape : (256, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_6_6"
@@ -384,26 +340,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "BiasAdd"
 name : "bias_6_7"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "BN"
 name : "BN_6_8"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_6_9"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_6_10"
-offset : 20894062
-mul : 4121
-rshift : 36
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_7_1"
@@ -413,29 +366,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_7_2"
-offset : 1402
-mul : 7741
-rshift : 22
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_7_3"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_7_4"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_7_5"
-offset : 467036650
-mul : 2345
-rshift : 33
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_7_6"
@@ -445,26 +394,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "BiasAdd"
 name : "bias_7_7"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "BN"
 name : "BN_7_8"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_7_9"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_7_10"
-offset : 15429149
-mul : 8287
-rshift : 37
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_8_1"
@@ -474,29 +420,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_8_2"
-offset : -485
-mul : 9857
-rshift : 22
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_8_3"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_8_4"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_8_5"
-offset : 479236496
-mul : 9141
-rshift : 35
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_8_6"
@@ -506,26 +448,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "BiasAdd"
 name : "bias_8_7"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "BN"
 name : "BN_8_8"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_8_9"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_8_10"
-offset : -18424039
-mul : 16483
-rshift : 38
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_9_1"
@@ -535,29 +474,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_9_2"
-offset : -3834
-mul : 4495
-rshift : 21
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_9_3"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_9_4"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_9_5"
-offset : 528845027
-mul : 16567
-rshift : 36
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_9_6"
@@ -567,26 +502,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "BiasAdd"
 name : "bias_9_7"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "BN"
 name : "BN_9_8"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_9_9"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_9_10"
-offset : -944916
-mul : 8165
-rshift : 37
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_10_1"
@@ -596,29 +528,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_10_2"
-offset : 8606
-mul : 9011
-rshift : 22
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_10_3"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_10_4"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_10_5"
-offset : 479083432
-mul : 1143
-rshift : 32
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_10_6"
@@ -628,26 +556,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "BiasAdd"
 name : "bias_10_7"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "BN"
 name : "BN_10_8"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_10_9"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_10_10"
-offset : -16060731
-mul : 8255
-rshift : 37
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_11_1"
@@ -657,29 +582,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_11_2"
-offset : 8990
-mul : 7333
-rshift : 22
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_11_3"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_11_4"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_11_5"
-offset : 470821957
-mul : 18609
-rshift : 36
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_11_6"
@@ -689,26 +610,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (512, 14, 14)
 
 type : "BiasAdd"
 name : "bias_11_7"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "BN"
 name : "BN_11_8"
-# Output shape : (512, 14, 14)
+lshift : 0
 
 type : "ReLU"
 name : "relu_11_9"
-# Output shape : (512, 14, 14)
 
 type : "Cvt"
 name : "cvt_11_10"
-offset : 9704767
-mul : 8217
-rshift : 37
-# Output shape : (512, 14, 14)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_12_1"
@@ -718,29 +636,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 2
-# Output shape : (512, 7, 7)
 
 type : "Cvt"
 name : "cvt_12_2"
-offset : -7615
-mul : 15293
-rshift : 23
-# Output shape : (512, 7, 7)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_12_3"
-# Output shape : (512, 7, 7)
+lshift : 0
 
 type : "ReLU"
 name : "relu_12_4"
-# Output shape : (512, 7, 7)
 
 type : "Cvt"
 name : "cvt_12_5"
-offset : 508256605
-mul : 8619
-rshift : 35
-# Output shape : (512, 7, 7)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_12_6"
@@ -750,26 +664,23 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (1024, 7, 7)
 
 type : "BiasAdd"
 name : "bias_12_7"
-# Output shape : (1024, 7, 7)
+lshift : 0
 
 type : "BN"
 name : "BN_12_8"
-# Output shape : (1024, 7, 7)
+lshift : 0
 
 type : "ReLU"
 name : "relu_12_9"
-# Output shape : (1024, 7, 7)
 
 type : "Cvt"
 name : "cvt_12_10"
-offset : 13622688
-mul : 16441
-rshift : 38
-# Output shape : (1024, 7, 7)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "dwc_13_1"
@@ -779,29 +690,25 @@ pad : 1
 dilation : 1
 kernel_size : 3
 stride : 1
-# Output shape : (1024, 7, 7)
 
 type : "Cvt"
 name : "cvt_13_2"
-offset : 5500
-mul : 547
-rshift : 18
-# Output shape : (1024, 7, 7)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "BN"
 name : "BN_13_3"
-# Output shape : (1024, 7, 7)
+lshift : 0
 
 type : "ReLU"
 name : "relu_13_4"
-# Output shape : (1024, 7, 7)
 
 type : "Cvt"
 name : "cvt_13_5"
-offset : 513264980
-mul : 8535
-rshift : 35
-# Output shape : (1024, 7, 7)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Convolution"
 name : "pwc_13_6"
@@ -811,33 +718,29 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (1024, 7, 7)
 
 type : "BiasAdd"
 name : "bias_13_7"
-# Output shape : (1024, 7, 7)
+lshift : 0
 
 type : "BN"
 name : "BN_13_8"
-# Output shape : (1024, 7, 7)
+lshift : 0
 
 type : "ReLU"
 name : "relu_13_9"
-# Output shape : (1024, 7, 7)
 
 type : "Cvt"
 name : "cvt_13_10"
-offset : 622868
-mul : 32653
-rshift : 39
-# Output shape : (1024, 7, 7)
+offset : 0
+mul : 0
+rshift : 0
 
 type : "Pooling"
 name : "pool14"
 kernel_size : 7
 stride : 1
 function : "avg"
-# Output shape : (1024, 1, 1)
 
 type : "Convolution"
 name : "fc1"
@@ -847,5 +750,14 @@ pad : 0
 dilation : 1
 kernel_size : 1
 stride : 1
-# Output shape : (1000, 1, 1)
+
+type : "BiasAdd"
+name : "bias3"
+lshift : 0
+
+type : "Cvt"
+name : "cvt2"
+offset : 0
+mul : 0
+rshift : 0
 

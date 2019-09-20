@@ -132,17 +132,18 @@ class test_inference(object):
 		return data
 	def bias_add(self, data, node):
 		bias = np.load(self.root_dir+node["name"]+'.npy').astype(np.int32)
+		bias = bias<<node['lshift']
 		for i in range(data.shape[0]):
 			data[i] = data[i] + bias[i]
 		return data
 	def BN(self, data, node):
-		# y = (x+m)*n
+		# y = (x+b)*k
 		args = np.load(self.root_dir+node["name"]+'.npy').astype(np.int64)
-		m = args[0]
-		n = args[1]
+		b = args[0]<<node['lshift']
+		k = args[1]
 		data = data.astype(np.int64)
 		for i in range(data.shape[0]):
-			data[i] = (data[i] + m[i]) * n[i]
+			data[i] = (data[i] + b[i]) * k[i]
 		return data
 	def relu(self, data, node):
 		return np.where(data>0,data,0).astype(np.int32)
@@ -201,8 +202,8 @@ def random_result(root_dir):
 	"""
 	net = test_inference(root_dir)
 	data = None
-	for i in range(len(net.graph)):
-		node = net.graph[i]
+	for graph_index in range(len(net.graph)):
+		node = net.graph[graph_index]
 		print(node['type'], node['name'], '=> ',end = '')
 		if node['type'] == 'Input':
 			np.save(root_dir+node['name'], np.random.randint(-128, 128, size=(node['c'],node['h'],node['w'])).astype(np.int8))
@@ -211,9 +212,33 @@ def random_result(root_dir):
 				node['group'] = 1
 			np.save(root_dir+node['name'], np.random.randint(-128, 128, size=(node['group'], node['num_output']//node['group'],data.shape[0]//node['group'],node['kernel_size'],node['kernel_size'])).astype(np.int8))
 		elif node['type'] == 'BiasAdd':
-			np.save(root_dir+node['name'], np.random.randint(-1000000, 1000000, size=(data.shape[0],)).astype(np.int32))
+			bias = np.random.randint(-(1<<15), 1<<15, size=(data.shape[0],)).astype(np.int16)
+			np.save(root_dir+node['name'], bias)
+			bias = bias.astype(np.int32)
+			max_bias = np.max(bias)
+			min_bias = np.min(bias)
+			max_num = np.max(data)
+			min_num = np.min(data)
+			for i in range(32):
+				if (max_bias<<i) > max_num or (min_bias<<i) < min_num :
+					break
+			if i != 0:
+				i = i-1
+			node['lshift'] = i
 		elif node['type'] == 'BN':
-			np.save(root_dir+node['name'], np.random.randint(-(1<<15), 1<<15, size=(2, data.shape[0])).astype(np.int16))
+			bn = np.random.randint(-(1<<15), 1<<15, size=(2, data.shape[0])).astype(np.int16)
+			np.save(root_dir+node['name'], bn)
+			b = bn[0].astype(np.int32)
+			max_b = np.max(b)
+			min_b = np.min(b)
+			max_num = np.max(data)
+			min_num = np.min(data)
+			for i in range(32):
+				if (max_b<<i) > max_num or (min_b<<i) < min_num :
+					break
+			if i != 0:
+				i = i-1
+			node['lshift'] = i
 		elif node['type'] == 'ReLU':
 			pass
 		elif node['type'] == 'Truncate':
@@ -258,7 +283,7 @@ def random_result(root_dir):
 			node['rshift'] = rshift
 		elif node['type'] == 'Pooling':
 			pass
-		data = net.inference_graph(i, 1, data)
+		data = net.inference_graph(graph_index , 1, data)
 		print(data.shape)
 		np.save(root_dir+node['name']+'-result', data)
 
