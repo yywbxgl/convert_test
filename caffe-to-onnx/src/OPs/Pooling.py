@@ -16,10 +16,12 @@ def getPoolingAttri(layer, input_shape):
     ##填充
     pads = [0, 0, 0, 0]#默认为0
     # 这里与卷积时一样,有pad,就按其值设置
-    if layer.pooling_param.pad != []:
-        pads = np.array([layer.pooling_param.pad] * 4).reshape(1, -1)[0].tolist()
-    elif layer.pooling_param.pad_h != 0 or layer.pooling_param.pad_w != 0:
+
+    if layer.pooling_param.pad_h != 0 or layer.pooling_param.pad_w != 0:
         pads = [layer.pooling_param.pad_h,layer.pooling_param.pad_w,layer.pooling_param.pad_h,layer.pooling_param.pad_w]
+        # print(pads)
+    elif layer.pooling_param.pad != []:
+        pads = np.array([layer.pooling_param.pad] * 4).reshape(1, -1)[0].tolist()
 
     #超参数字典
     dict = {"kernel_shape":kernel_shape,
@@ -27,6 +29,7 @@ def getPoolingAttri(layer, input_shape):
             "pads":pads
             }
     return dict
+
 #计算输出维度
 def getPoolingOutShape(input_shape,layer,dict):
     kernel_shape = dict["kernel_shape"]
@@ -34,13 +37,18 @@ def getPoolingOutShape(input_shape,layer,dict):
     strides = dict["strides"]
 
     #计算输出维度,与卷积一样,若为非整数则向上取整
-    h = (input_shape[0][2] - kernel_shape[0] + 2 * pads[0])/strides[0] + 1
-    if h > int(h):
-        output_shape_h = int(h) + 1
-        pads = [0,0,1,1]
-    else:
-        output_shape_h = int(h)
-    output_shape = [[input_shape[0][0],input_shape[0][1],output_shape_h,output_shape_h]]
+    h = (input_shape[0][2] - kernel_shape[0] + 2*pads[0])/strides[0] + 1
+    output_shape_h = int(h)
+    w = (input_shape[0][3] - kernel_shape[0] + 2*pads[1])/strides[1] + 1
+    output_shape_w = int(w)
+    
+    # if h > int(h):
+    #     output_shape_h = int(h) + 1
+    #     pads = [0,0,1,1]
+    # else:
+    #     output_shape_h = int(h)
+
+    output_shape = [[input_shape[0][0],input_shape[0][1],output_shape_h,output_shape_w]]
 
     return output_shape
 #构建节点
