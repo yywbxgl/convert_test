@@ -1,0 +1,763 @@
+type : "Input"
+name : "data"
+h : 224
+c : 3
+w : 224
+
+type : "Convolution"
+name : "conv1"
+num_output : 32
+group : 1
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 2
+
+type : "BiasAdd"
+name : "bias2"
+lshift : 0
+
+type : "BN"
+name : "BN3"
+lshift : 0
+
+type : "Truncate"
+name : "tr4"
+rshift : 0
+
+type : "ReLU"
+name : "relu5"
+
+type : "Cvt"
+name : "cvt1"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_1_1"
+num_output : 32
+group : 32
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_1_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_1_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_1_4"
+
+type : "Cvt"
+name : "cvt_1_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_1_6"
+num_output : 64
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_1_7"
+lshift : 0
+
+type : "BN"
+name : "BN_1_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_1_9"
+
+type : "Cvt"
+name : "cvt_1_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_2_1"
+num_output : 64
+group : 64
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 2
+
+type : "Cvt"
+name : "cvt_2_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_2_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_2_4"
+
+type : "Cvt"
+name : "cvt_2_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_2_6"
+num_output : 128
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_2_7"
+lshift : 0
+
+type : "BN"
+name : "BN_2_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_2_9"
+
+type : "Cvt"
+name : "cvt_2_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_3_1"
+num_output : 128
+group : 128
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_3_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_3_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_3_4"
+
+type : "Cvt"
+name : "cvt_3_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_3_6"
+num_output : 128
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_3_7"
+lshift : 0
+
+type : "BN"
+name : "BN_3_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_3_9"
+
+type : "Cvt"
+name : "cvt_3_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_4_1"
+num_output : 128
+group : 128
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 2
+
+type : "Cvt"
+name : "cvt_4_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_4_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_4_4"
+
+type : "Cvt"
+name : "cvt_4_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_4_6"
+num_output : 256
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_4_7"
+lshift : 0
+
+type : "BN"
+name : "BN_4_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_4_9"
+
+type : "Cvt"
+name : "cvt_4_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_5_1"
+num_output : 256
+group : 256
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_5_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_5_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_5_4"
+
+type : "Cvt"
+name : "cvt_5_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_5_6"
+num_output : 256
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_5_7"
+lshift : 0
+
+type : "BN"
+name : "BN_5_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_5_9"
+
+type : "Cvt"
+name : "cvt_5_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_6_1"
+num_output : 256
+group : 256
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 2
+
+type : "Cvt"
+name : "cvt_6_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_6_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_6_4"
+
+type : "Cvt"
+name : "cvt_6_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_6_6"
+num_output : 512
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_6_7"
+lshift : 0
+
+type : "BN"
+name : "BN_6_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_6_9"
+
+type : "Cvt"
+name : "cvt_6_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_7_1"
+num_output : 512
+group : 512
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_7_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_7_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_7_4"
+
+type : "Cvt"
+name : "cvt_7_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_7_6"
+num_output : 512
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_7_7"
+lshift : 0
+
+type : "BN"
+name : "BN_7_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_7_9"
+
+type : "Cvt"
+name : "cvt_7_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_8_1"
+num_output : 512
+group : 512
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_8_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_8_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_8_4"
+
+type : "Cvt"
+name : "cvt_8_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_8_6"
+num_output : 512
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_8_7"
+lshift : 0
+
+type : "BN"
+name : "BN_8_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_8_9"
+
+type : "Cvt"
+name : "cvt_8_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_9_1"
+num_output : 512
+group : 512
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_9_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_9_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_9_4"
+
+type : "Cvt"
+name : "cvt_9_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_9_6"
+num_output : 512
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_9_7"
+lshift : 0
+
+type : "BN"
+name : "BN_9_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_9_9"
+
+type : "Cvt"
+name : "cvt_9_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_10_1"
+num_output : 512
+group : 512
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_10_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_10_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_10_4"
+
+type : "Cvt"
+name : "cvt_10_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_10_6"
+num_output : 512
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_10_7"
+lshift : 0
+
+type : "BN"
+name : "BN_10_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_10_9"
+
+type : "Cvt"
+name : "cvt_10_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_11_1"
+num_output : 512
+group : 512
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_11_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_11_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_11_4"
+
+type : "Cvt"
+name : "cvt_11_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_11_6"
+num_output : 512
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_11_7"
+lshift : 0
+
+type : "BN"
+name : "BN_11_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_11_9"
+
+type : "Cvt"
+name : "cvt_11_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_12_1"
+num_output : 512
+group : 512
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 2
+
+type : "Cvt"
+name : "cvt_12_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_12_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_12_4"
+
+type : "Cvt"
+name : "cvt_12_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_12_6"
+num_output : 1024
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_12_7"
+lshift : 0
+
+type : "BN"
+name : "BN_12_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_12_9"
+
+type : "Cvt"
+name : "cvt_12_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "dwc_13_1"
+num_output : 1024
+group : 1024
+pad : 1
+dilation : 1
+kernel_size : 3
+stride : 1
+
+type : "Cvt"
+name : "cvt_13_2"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "BN"
+name : "BN_13_3"
+lshift : 0
+
+type : "ReLU"
+name : "relu_13_4"
+
+type : "Cvt"
+name : "cvt_13_5"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Convolution"
+name : "pwc_13_6"
+num_output : 1024
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias_13_7"
+lshift : 0
+
+type : "BN"
+name : "BN_13_8"
+lshift : 0
+
+type : "ReLU"
+name : "relu_13_9"
+
+type : "Cvt"
+name : "cvt_13_10"
+offset : 0
+mul : 0
+rshift : 0
+
+type : "Pooling"
+name : "pool14"
+kernel_size : 7
+stride : 1
+function : "avg"
+
+type : "Convolution"
+name : "fc1"
+num_output : 1000
+group : 1
+pad : 0
+dilation : 1
+kernel_size : 1
+stride : 1
+
+type : "BiasAdd"
+name : "bias3"
+lshift : 0
+
+type : "Cvt"
+name : "cvt2"
+offset : 0
+mul : 0
+rshift : 0
+

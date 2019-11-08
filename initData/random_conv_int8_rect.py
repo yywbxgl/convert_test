@@ -24,29 +24,39 @@ def _random_graph(conf, t):
 	rand = compose(random_select, arr)
 	C = rand("C")
 	H = rand("H")
-	shape = (C,H,H)
+	W = rand("W")
+	shape = (C,H,W)
 	ret.append({"type":"Input",
 		"name":"data",
 		"shape":shape})
 
 	#convolution
-	choice_list = list(filter(lambda x:(lambda conv_size, stride, pad : pad in (0, conv_size//2) and conv_size>=stride and H+pad*2-conv_size>=0 and (H+pad*2-conv_size)%stride==0)(1+x[3]*(x[0]-1), x[1], x[2]),
-		itertools.product(arr("kernel_size"), arr("stride"), arr("pad"), arr("dilation"))))
+	choice_list = list(filter(lambda x:
+		(lambda conv_H_size, conv_W_size, stride_H, stride_W, pad_H_max, pad_W_max, H_add_pad, W_add_pad : pad_H_max<conv_H_size and pad_W_max<conv_W_size and conv_H_size>=stride_H and conv_W_size>=stride_W and H_add_pad-conv_H_size>=0 and (H_add_pad-conv_H_size)%stride_H==0 and W_add_pad-conv_W_size>=0 and (W_add_pad-conv_W_size)%stride_W==0)
+		((x[0]-1)*x[2]+1, (x[1]-1)*x[3]+1, x[4], x[5], max(x[6:8]), max(x[8:10]), H+sum(x[6:8]), W+sum(x[8:10])),
+		itertools.product(arr("CONV_H"), arr("CONV_W"), arr("dilation_H"), arr("dilation_W"), arr("stride_H"), arr("stride_W"), arr("pad_top"), arr("pad_bottom"), arr("pad_left"), arr("pad_right"))))
 	if len(choice_list)==0:
 		return None
 	num_output = rand("K")
-	kernel_size, stride, pad, dilation = random_select(choice_list)
+	CONV_H, CONV_W, dilation_H, dilation_W, stride_H, stride_W, pad_top, pad_bottom, pad_left, pad_right = random_select(choice_list)
 	ret.append({"type":"Convolution",
 		"name":"conv1",
 		"num_output":num_output,
-		"kernel_size":kernel_size,
-		"stride":stride,
-		"pad":pad,
-		"dilation":dilation})
+		"CONV_H":CONV_H,
+		"CONV_W":CONV_W,
+		"dilation_H":dilation_H,
+		"dilation_W":dilation_W,
+		"stride_H":stride_H,
+		"stride_W":stride_W,
+		"pad_top":pad_top,
+		"pad_bottom":pad_bottom,
+		"pad_left":pad_left,
+		"pad_right":pad_right})
 	if t=='Convolution':
 		return ret
-	X = (shape[1]+pad*2-kernel_size)//stride+1
-	shape = (num_output, X, X)
+	H_out = (shape[1]+pad_top+pad_bottom-((CONV_H-1)*dilation_H+1))//stride_H+1
+	W_out = (shape[2]+pad_left+pad_right-((CONV_W-1)*dilation_W+1))//stride_W+1
+	shape = (num_output, H_out, W_out)
 
 	return ret
 
@@ -61,22 +71,13 @@ def _check(graph):
 			feature_size = (entries*shape[1]+511)//512*512*64
 			feature_banks = (feature_size + (bank_size-1)) // bank_size
 		elif i["type"] == "Convolution":
-			weight_size = i["num_output"] * shape[0] * i["kernel_size"] * i["kernel_size"]
+			weight_size = i["num_output"] * shape[0] * i["CONV_H"] * i["CONV_W"]
 			weight_size = (weight_size + 511) // 512 * 512
 			weight_banks = (weight_size + (bank_size-1)) // bank_size
 			#if weight_banks + feature_banks > 16:
 			#	return False
 			X = (shape[1]+i["pad"]*2-i["kernel_size"])//i["stride"]+1
 			shape = (i["num_output"], X, X)
-		elif i["type"] == "ReLU":
-			pass
-		elif i["type"] == "Pooling":
-			X = (shape[1]-i["kernel_size"])//i["stride"]+1
-			shape = (shape[0], X, X)
-		elif i["type"] == "InnerProduct":
-			if reduce(lambda a,b:a*b,shape,1) > 15000:
-				return False
-			shape = (i["num_output"],)
 	global reg
 	reg['BANK:FEATURE_BANK'] = feature_banks - 1
 	reg['BANK:WEIGHT_BANK'] = weight_banks - 1
@@ -97,73 +98,8 @@ def random_graph(conf, t='Convolution'):
 
 def random_result(arg, root_dir):
 	"""
-	根据神经网络结构随机产生prototxt/featuremap/weight/bias，并按照结构里的名字为文件命名
+	根据神经网络结构随机产生featuremap/weight/bias，并按照结构里的名字为文件命名
 	"""
-	prototxt = root_dir + 'deploy.prototxt'
-	with open(prototxt, 'w') as f:
-		print(prototxt)
-		s = 'name: "MyNet"\n'
-		for i in arg:
-			if i["type"] == "Input":
-				s += 'layer{\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  top:"data"\n'
-				s += '  input_param:{shape: {dim:1 dim:%d dim:%d dim:%d}}\n' % i["shape"]
-				s += '}\n'
-				layer_name = "data"
-			elif i["type"] == "Convolution":
-				s += 'layer{\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				s += '  top: "conv1"\n'
-				s += '  convolution_param {\n'
-				s += '    num_output: %d\n' % (i["num_output"],)
-				s += '    kernel_size: %d\n' % (i["kernel_size"],)
-				s += '    stride: %d\n' % (i["stride"],)
-				s += '    pad:%d\n' % (i["pad"],)
-				s += '    dilation:%d\n' % (i["dilation"],)
-				s += '  }\n'
-				s += '}\n'
-				layer_name = "conv1"
-			elif i["type"] == "ReLU":
-				s += 'layer {\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				#in_space
-				#s += '  top: "relu1"\n'
-				s += '  top: "%s"\n' % (layer_name,)
-				s += '}\n'
-				#layer_name = "relu1"
-			elif i["type"] == "Pooling":
-				s += 'layer {\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				s += '  top: "pool1"\n'
-				s += '  pooling_param {\n'
-				s += '    pool: MAX\n'
-				s += '    kernel_size: %d\n' % (i["kernel_size"],)
-				s += '    stride: %d\n' % (i["stride"],)
-				s += '  }\n'
-				s += '}\n'
-				layer_name = "pool1"
-			elif i["type"] == "InnerProduct":
-				s += 'layer {\n'
-				s += '  name:"%s"\n' % (i["name"],)
-				s += '  type:"%s"\n' % (i["type"],)
-				s += '  bottom: "%s"\n' % (layer_name,)
-				s += '  top: "ip1"\n'
-				s += '  inner_product_param {\n'
-				s += '    num_output: %d\n' % (i["num_output"],)
-				s += '  }\n'
-				s += '}\n'
-
-		f.write(s)
-	sys.stdout.write(open(prototxt, 'r').read())
-
 	global reg
 	for i in arg:
 		if i["type"] == "Input":
@@ -458,15 +394,22 @@ if __name__ == '__main__':
 	root_dir = './'
 	conf = { "C" : [1,4],
 		"H" : [5,20],
+		"W" : [5,20],
 		"K" : [1,17],
-		"kernel_size" : [1,12,2],
-		"stride" : [1,12],
-		"pad" : [0,6],
-		"dilation" : [1,6]
+		"CONV_H" : [1,12,2],
+		"CONV_W" : [1,12,2],
+		"stride_H" : [1,12],
+		"stride_W" : [1,12],
+		"pad_top" : [0,6],
+		"pad_bottom" : [0,6],
+		"pad_left" : [0,6],
+		"pad_right" : [0,6],
+		"dilation_H" : [1,6],
+		"dilation_W" : [1,6]
 		}
 	for arg in sys.argv[1:]:
 		if arg == '-h':
-			print("For example:\n\t" + sys.argv[0] + " C=1:4 H=5:20 K=1:17 kernel_size=1:12:2 stride=1:12 pad=0:6 dilation=1,2,3,4,5 ./")
+			print("For example:\n\t" + sys.argv[0] + " C=1:4 H=5:20 K=1:17 CONV_H=1:12:2 CONV_W=1:12:2 stride=1:12 pad_left=0:6 pad_right=0:6 pad_top=0:6 pad_bottom=0:6 dilation_H=1,2,3,4,5 dialtion_W=1:6 ./")
 			exit(0)
 		i = arg.find('=')
 		if i<0:
